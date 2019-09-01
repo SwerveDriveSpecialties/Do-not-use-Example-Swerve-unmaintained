@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'edu.wpi.first.GradleRIO' version '2019.3.2'
+}
+
+def ROBOT_MAIN_CLASS = "com.swervedrivespecialties.exampleswerve.Main"
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+
+    // CTRE maven repository for Phoenix library (Talon SRX drivers, Victor SPX, etc.)
+    maven {
+        url = 'http://devsite.ctr-electronics.com/maven/release/'
+    }
+
+    // KauaiLabs maven repository for NavX drivers
+    maven {
+        url = 'https://www.kauailabs.com/maven2/'
+    }
+
+    maven {
+        url = "http://www.revrobotics.com/content/sw/max/sdk/maven/"
+    }
+
+    maven {
+        url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
+    }
+}
+
+deploy {
+    targets {
+        roboRIO('roborio') {
+            team = frc.getTeamOrDefault(2910)
+        }
+    }
+    artifacts {
+        frcJavaArtifact('frcJava') {
+            targets << 'roborio'
+
+            debug = frc.getDebugOrDefault(false)
+        }
+    }
+}
+
+dependencies {
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    compile project(':common:robot')
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '5.1'
+}
