@@ -1,3 +1,1 @@
 rootProject.name = 'exampleswerve'
-
-include ":common:robot"

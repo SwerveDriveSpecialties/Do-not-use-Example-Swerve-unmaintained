@@ -28,6 +28,10 @@ repositories {
     maven {
         url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
     }
+
+    maven {
+        url = "https://jitpack.io"
+    }
 }
 
 deploy {
@@ -51,7 +55,7 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    compile project(':common:robot')
+    compile "com.github.FRCTeam2910.Common-Public:robot:fbbad7f47c"
 }
 
 jar {
