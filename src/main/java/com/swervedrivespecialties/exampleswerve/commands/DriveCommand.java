@@ -14,19 +14,19 @@ public class DriveCommand extends Command {
 
     @Override
     protected void execute() {
-        double forward = Robot.getOi().getPrimaryJoystick().getY(GenericHID.Hand.kLeft);
+        double forward = -Robot.getOi().getPrimaryJoystick().getRawAxis(1);
         // Square the forward stick
-        forward = Math.copySign(forward * forward, forward);
+        forward = Math.copySign(Math.pow(forward, 2.0), forward);
 
-        double strafe = Robot.getOi().getPrimaryJoystick().getX(GenericHID.Hand.kLeft);
+        double strafe = -Robot.getOi().getPrimaryJoystick().getRawAxis(0);
         // Square the strafe stick
-        strafe = Math.copySign(strafe * strafe, strafe);
+        strafe = Math.copySign(Math.pow(strafe, 2.0), strafe);
 
-        double rotation = Robot.getOi().getPrimaryJoystick().getX(GenericHID.Hand.kRight);
-        // Square the rotation stick and scale it down by 50% to improve controlability
-        rotation = Math.copySign(rotation * rotation, rotation) * 0.5;
+        double rotation = -Robot.getOi().getPrimaryJoystick().getRawAxis(4);
+        // Square the rotation stick
+        rotation = Math.copySign(Math.pow(rotation, 2.0), rotation);
 
-        DrivetrainSubsystem.getInstance().holonomicDrive(new Vector2(forward, strafe), rotation);
+        DrivetrainSubsystem.getInstance().holonomicDrive(new Vector2(forward, strafe), rotation, true);
     }
 
     @Override

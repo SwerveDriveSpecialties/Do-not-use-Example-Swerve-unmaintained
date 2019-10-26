@@ -18,10 +18,10 @@ public class DrivetrainSubsystem extends SwerveDrivetrain {
     private static final double TRACKWIDTH = 19.5;
     private static final double WHEELBASE = 23.5;
 
-    private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(-50.00 + 180.0);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(-284.47 + 180.0);
-    private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(-331.52 + 180.0);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(-209.22);
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(170.22);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(43.56);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(237.47);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(336.70);
 
     private static final Object INSTANCE_LOCK = new Object();
     private static DrivetrainSubsystem instance;
@@ -31,6 +31,9 @@ public class DrivetrainSubsystem extends SwerveDrivetrain {
     private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
 
     public DrivetrainSubsystem() {
+        gyroscope.calibrate();
+        gyroscope.setInverted(true); // You might not need to invert the gyro
+
         SwerveModule frontLeftModule = new Mk2SwerveModule(
                 new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
                 FRONT_LEFT_ANGLE_OFFSET,
