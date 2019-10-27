@@ -1,5 +1,7 @@
 # Example Swerve Project
 
+When using Swerve Drive Specialties MK2 modules this template code will provide a quick and simple way to get your robot driving.
+
 ## Electrical Hardware setup
 
 1.	A navX should be plugged into the roboRIO MXP port.
