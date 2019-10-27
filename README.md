@@ -6,7 +6,7 @@ When using Swerve Drive Specialties MK2 modules this template code will provide 
 
 1.	A navX should be plugged into the roboRIO MXP port.
 2.	Steering encoders (analog US digital MA3) are connected to the Robo Rio analog input ports.	
-3.	Spark Max motor controllers for drive the wheels are:
+3.	Spark Max motor controllers for the drive motors are:
     1.	powered using 40 Amp PDP ports and breakers
     2.	controlled with CAN Bus
     3.  set to brushless brake mode (blinking cyan LED status when diasbled) 
