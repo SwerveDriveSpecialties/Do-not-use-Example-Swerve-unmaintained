@@ -46,7 +46,7 @@ rotate clockwise while left should make the robot rotate counter-clockwise.
 The back button on the controller is setup to re-zero the robot's gyroscope. By default, the direction the robot is
 facing when turned on is the forwards direction but this can be changed by re-zeroing the gyroscope.
 
-## How Configure For Your Robot
+## Configure For Your Robot
 
 1. Set your team number using the WPILib extension's "Set Team Number" action.
 2. In the `RobotMap` class:
