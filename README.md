@@ -9,10 +9,12 @@ When using Swerve Drive Specialties MK2 modules this template code will provide 
 3.	Spark Max motor controllers for drive the wheels are:
     1.	powered using 40 Amp PDP ports and breakers
     2.	controlled with CAN Bus
+    3.  set to brushless brake mode (blinking cyan LED status when diasbled) 
 4.	Spark Max motor controllers for the steering motors are:
     1.	powered with either size PDP port. We recommend connecting them to the small ports with 30 Amp breakers
     2.	controlled with PWM
-
+    3.  set to brushless brake mode (blinking cyan LED status when diasbled) 
+    
 The following port mapping is recommended
 
 1.	Front Left Module
@@ -55,7 +57,7 @@ facing when turned on is the forwards direction but this can be changed by re-ze
 4. Deploy the code to your robot.
     > NOTE: The robot isn't drivable quite yet, we still have to setup the module offsets
 5. Turn the robot on its side and align all the wheels so they are facing in the forwards direction.
-    > NOTE: The wheels must be as straight as possible. It's recommended to use long strait edge such as a piece of 2x1 in order to make the wheels straight.
+    > NOTE: The wheels will be pointed forwards (not backwards) when modules are turned so the large bevel gears are towards the right side of the robot. When aligning the wheels they must be as straight as possible. It is recommended to use a long strait edge such as a piece of 2x1 in order to make the wheels straight.
 6. Record the angles of each module using the angle put onto Shuffleboard. The values are named
     `Front Left Module Angle`, `Front Right Module Angle`, etc.
 7. Set the values of the `*_ANGLE_OFFSET` to `-Math.toRadians(<the angle you recorded>)`
