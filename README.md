@@ -2,7 +2,7 @@
 
 When using Swerve Drive Specialties MK2 modules this template code will provide a quick and simple way to get your robot driving.
 
-## Electrical Hardware setup
+## Electrical Hardware Setup
 
 1.	A navX should be plugged into the roboRIO MXP port.
 2.	Steering encoders (analog US digital MA3) are connected to the Robo Rio analog input ports.	
