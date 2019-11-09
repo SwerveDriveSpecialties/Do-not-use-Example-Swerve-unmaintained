@@ -16,11 +16,6 @@ repositories {
         url = 'http://devsite.ctr-electronics.com/maven/release/'
     }
 
-    // KauaiLabs maven repository for NavX drivers
-    maven {
-        url = 'https://www.kauailabs.com/maven2/'
-    }
-
     maven {
         url = "http://www.revrobotics.com/content/sw/max/sdk/maven/"
     }
