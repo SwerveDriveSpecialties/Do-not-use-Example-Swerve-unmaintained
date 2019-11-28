@@ -32,7 +32,7 @@ The following port mapping is recommended
 4.	Back Right Module
     1.	Drive Motor Controller – CAN ID 4
     2.	Steering Motor Controller – PWM 4
-    3.	Steering Encoder – Analog input 4
+    3.	Steering Encoder – Analog input 0
 
 ## Default Control Setup
 
