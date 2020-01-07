@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'edu.wpi.first.GradleRIO' version '2019.4.1'
+    id 'edu.wpi.first.GradleRIO' version '2020.1.2'
 }
 
 def ROBOT_MAIN_CLASS = "com.swervedrivespecialties.exampleswerve.Main"
@@ -21,11 +21,31 @@ repositories {
     }
 
     maven {
-        url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
+        url = 'https://frcmaven.wpi.edu/artifactory/release/'
     }
 
     maven {
         url = "https://jitpack.io"
+    }
+
+    String frcYear = '2020'
+    File frcHome
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        String publicFolder = System.getenv('PUBLIC')
+        if (publicFolder == null) {
+            publicFolder = "C:\\Users\\Public"
+        }
+        def homeRoot = new File(publicFolder, "wpilib")
+        frcHome = new File(homeRoot, frcYear)
+    } else {
+        def userFolder = System.getProperty("user.home")
+        def homeRoot = new File(userFolder, "wpilib")
+        frcHome = new File(homeRoot, frcYear)
+    }
+    def frcHomeMaven = new File(frcHome, 'maven')
+    maven {
+        name 'frcHome'
+        url frcHomeMaven
     }
 }
 
@@ -45,20 +65,21 @@ deploy {
 }
 
 dependencies {
-    compile wpi.deps.wpilib()
-    compile wpi.deps.vendor.java()
+    implementation wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+
+    implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    compile "com.github.FRCTeam2910.Common-Public:robot:fbbad7f47c"
+    // In Java for now, the argument must be false
+    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+
+    implementation "com.github.FRCTeam2910.Common:robot:6456e9c82e"
 }
 
 jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-}
-
-wrapper {
-    distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = '5.1'
 }
