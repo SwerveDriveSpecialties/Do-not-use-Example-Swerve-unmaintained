@@ -5,34 +5,34 @@ When using Swerve Drive Specialties MK2 modules this template code will provide 
 ## Electrical Hardware Setup
 
 1.	A navX should be plugged into the roboRIO MXP port.
-2.	Steering encoders (analog US digital MA3) are connected to the Robo Rio analog input ports.	
+2.	Steering encoders (analog US digital MA3) are connected to the roboRIO analog input ports.	
 3.	Spark Max motor controllers for the drive motors are:
     1.	powered using 40 Amp PDP ports and breakers
     2.	controlled with CAN Bus
-    3.  set to brushless brake mode (blinking cyan LED status when diasbled) 
+    3.  set to brushless brake mode (blinking cyan LED status when disabled) 
 4.	Spark Max motor controllers for the steering motors are:
     1.	powered with either size PDP port. We recommend connecting them to the small ports with 30 Amp breakers
-    2.	controlled with PWM
-    3.  set to brushless brake mode (blinking cyan LED status when diasbled) 
+    2.	controlled with CAN Bus
+    3.  set to brushless brake mode (blinking cyan LED status when disabled) 
     
 The following port mapping is recommended
 
 1.	Front Left Module
     1.	Drive Motor Controller – CAN ID 1
-    2.	Steering Motor Controller – PWM 1
-    3.	Steering Encoder – Analog input 1
-2.	Front Right Module
-    1.	Drive Motor Controller – CAN ID 2
-    2.	Steering Motor Controller – PWM 2
-    3.	Steering Encoder – Analog input 2
-3.	Back Left Module
-    1.	Drive Motor Controller – CAN ID 3
-    2.	Steering Motor Controller – PWM 3
-    3.	Steering Encoder – Analog input 3
-4.	Back Right Module
-    1.	Drive Motor Controller – CAN ID 4
-    2.	Steering Motor Controller – PWM 4
+    2.	Steering Motor Controller – CAN ID 2
     3.	Steering Encoder – Analog input 0
+2.	Front Right Module
+    1.	Drive Motor Controller – CAN ID 3
+    2.	Steering Motor Controller – CAN ID 4
+    3.	Steering Encoder – Analog input 1
+3.	Back Left Module
+    1.	Drive Motor Controller – CAN ID 5
+    2.	Steering Motor Controller – CAN ID 6
+    3.	Steering Encoder – Analog input 2
+4.	Back Right Module
+    1.	Drive Motor Controller – CAN ID 7
+    2.	Steering Motor Controller – CAN ID 8
+    3.	Steering Encoder – Analog input 3
 
 ## Default Control Setup
 

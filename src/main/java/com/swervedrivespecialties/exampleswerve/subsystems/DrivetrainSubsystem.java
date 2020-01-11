@@ -24,10 +24,10 @@ public class DrivetrainSubsystem extends Subsystem {
     private static final double TRACKWIDTH = 19.5;
     private static final double WHEELBASE = 23.5;
 
-    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(346.410234 + 180.0);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(223.400214 + 180.0);
-    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(50.812766 + 180.0);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(110.869824 + 180.0);
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
 
     private static DrivetrainSubsystem instance;
 
@@ -98,12 +98,12 @@ public class DrivetrainSubsystem extends Subsystem {
         backLeftModule.updateSensors();
         backRightModule.updateSensors();
 
-        SmartDashboard.putNumber("Front Left Module", Math.toDegrees(frontLeftModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Front Right Module", Math.toDegrees(frontRightModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Back Left Module", Math.toDegrees(backLeftModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Back Right Module", Math.toDegrees(backRightModule.getCurrentAngle()));
+        SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getCurrentAngle()));
+        SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
+        SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
+        SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
 
-        SmartDashboard.putNumber("Gyroscope angle", gyroscope.getAngle().toDegrees());
+        SmartDashboard.putNumber("Gyroscope Angle", gyroscope.getAngle().toDegrees());
 
         frontLeftModule.updateState(TimedRobot.kDefaultPeriod);
         frontRightModule.updateState(TimedRobot.kDefaultPeriod);
