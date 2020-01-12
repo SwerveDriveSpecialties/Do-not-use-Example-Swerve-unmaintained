@@ -67,6 +67,51 @@ facing when turned on is the forwards direction but this can be changed by re-ze
 9. Make sure all the wheels are spinning in the correct direction. If not, add 180 degrees to the offset of each wheel
     that is spinning in the incorrect direction. i.e `-Math.toRadians(<angle> + 180.0)`.
 
-#### Optional Steps
+### Optional Steps
+#### Changing Controller Setup
+To invert the controller sticks or modify the control mapping modify the `DriveCommand` class.
 
-1. To invert the controller sticks or modify the control mapping modify the `DriveCommand` class.
+#### Using Different Types of Motors
+While the default hardware setup uses NEOs & Spark MAXs to control the module, teams may desire to use different motors
+to control their modules. The new `Mk2SwerveModuleBuilder` class supports any combination of NEOs, CIMs, or Mini CIMs
+using either CAN or PWM.
+
+##### Example 1
+Angle motor: NEO controlled by a Spark MAX over CAN
+Drive motor: NEO controlled by a Spark MAX over CAN
+
+```java
+SwerveModule module = new Mk2SwerveModuleBuilder(new Vector2(5.0, 5.0))
+    .angleEncoder(new AnalogInput(0), -Math.toRadians(254.16))
+    .angleMotor(new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless),
+            Mk2SwerveModuleBuilder.MotorType.NEO)
+    .driveMotor(new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless),
+            Mk2SwerveModuleBuilder.MotorType.NEO)
+    .build();
+```
+
+##### Example 2
+Angle motor: NEO controlled by a Spark MAX over PWM with custom PID constants
+Drive motor: NEO controlled by a Spark MAX over CAN
+
+
+```java
+SwerveModule module = new Mk2SwerveModuleBuilder(new Vector2(5.0, 5.0))
+    .angleEncoder(new AnalogInput(0), -Math.toRadians(330.148))
+    .angleMotor(new Spark(4), new PidConstants(1.0, 0.0, 0.001))
+    .driveMotor(new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless),
+            Mk2SwerveModuleBuilder.MotorType.NEO)
+    .build();
+```
+
+##### Example 3
+Angle motor: Mini CIM controlled by a Talon SRX over CAN
+Drive motor: CIM controlled by a Talon SRX over CAN
+
+```java
+SwerveModule module = new Mk2SwerveModuleBuilder(new Vector2(5.0, 5.0))
+    .angleEncoder(new AnalogInput(0), -Math.toRadians(118.1114))
+    .angleMotor(new TalonSRX(4), Mk2SwerveModuleBuilder.MotorType.MINI_CIM)
+    .driveMotor(new TalonSRX(5), Mk2SwerveModuleBuilder.MotorType.CIM)
+    .build();
+```
