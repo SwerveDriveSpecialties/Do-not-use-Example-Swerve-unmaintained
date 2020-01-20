@@ -4,21 +4,22 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
 import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.kinematics.ChassisVelocity;
+import org.frcteam2910.common.kinematics.SwerveKinematics;
+import org.frcteam2910.common.kinematics.SwerveOdometry;
+import org.frcteam2910.common.math.RigidTransform2;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
 import org.frcteam2910.common.robot.drivers.NavX;
+import org.frcteam2910.common.util.HolonomicDriveSignal;
 
 public class DrivetrainSubsystem extends Subsystem {
     private static final double TRACKWIDTH = 19.5;
@@ -28,6 +29,9 @@ public class DrivetrainSubsystem extends Subsystem {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
+
+    private boolean _isFieldOriented = true; //When the robot starts up, the drivetrain is field oriented.
+    private double curMinSpeed = .25;
 
     private static DrivetrainSubsystem instance;
 
@@ -64,12 +68,35 @@ public class DrivetrainSubsystem extends Subsystem {
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
-    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            new Translation2d(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)
+    private final SwerveModule[] modules = {frontLeftModule, frontRightModule, backLeftModule, backRightModule};
+
+    private final SwerveKinematics kinematics = new SwerveKinematics(
+            new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
+            new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
+            new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
+            new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)
     );
+
+    // Logging stuff
+    private NetworkTableEntry poseXEntry;
+    private NetworkTableEntry poseYEntry;
+    private NetworkTableEntry poseAngleEntry;
+
+    private NetworkTableEntry[] moduleAngleEntries = new NetworkTableEntry[modules.length];
+
+//     private final Object sensorLock = new Object();
+//     @GuardedBy("sensorLock")
+    private final NavX navX = new NavX(SPI.Port.kMXP);
+
+//     private final Object kinematicsLock = new Object();
+//     @GuardedBy("kinematicsLock")
+    private RigidTransform2 pose = RigidTransform2.ZERO;
+
+//     private final Object stateLock = new Object();
+//     @GuardedBy("stateLock")
+    private HolonomicDriveSignal driveSignal = null;
+
+    private final SwerveOdometry odometry = new SwerveOdometry(kinematics, RigidTransform2.ZERO);
 
     private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
 
@@ -91,49 +118,133 @@ public class DrivetrainSubsystem extends Subsystem {
         return instance;
     }
 
-    @Override
-    public void periodic() {
-        frontLeftModule.updateSensors();
-        frontRightModule.updateSensors();
-        backLeftModule.updateSensors();
-        backRightModule.updateSensors();
-
-        SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
-        SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
-
-        SmartDashboard.putNumber("Gyroscope Angle", gyroscope.getAngle().toDegrees());
-
-        frontLeftModule.updateState(TimedRobot.kDefaultPeriod);
-        frontRightModule.updateState(TimedRobot.kDefaultPeriod);
-        backLeftModule.updateState(TimedRobot.kDefaultPeriod);
-        backRightModule.updateState(TimedRobot.kDefaultPeriod);
+    public RigidTransform2 getPose() {
+        return pose;
     }
 
-    public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
-        rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
-        ChassisSpeeds speeds;
-        if (fieldOriented) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-                    Rotation2d.fromDegrees(gyroscope.getAngle().toDegrees()));
-        } else {
-            speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-        }
-
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
-        frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
-        frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
-        backLeftModule.setTargetVelocity(states[2].speedMetersPerSecond, states[2].angle.getRadians());
-        backRightModule.setTargetVelocity(states[3].speedMetersPerSecond, states[3].angle.getRadians());
+    public void drive(Vector2 translationalVelocity, double rotationalVelocity, boolean fieldOriented) {
+        driveSignal = new HolonomicDriveSignal(translationalVelocity, rotationalVelocity, fieldOriented);
     }
 
     public void resetGyroscope() {
         gyroscope.setAdjustmentAngle(gyroscope.getUnadjustedAngle());
     }
 
+    public void update(double timestamp, double dt) {
+        updateOdometry(dt);
+
+        HolonomicDriveSignal driveSignal;
+        driveSignal = this.driveSignal;
+
+        updateModules(driveSignal, dt);
+    }
+
+    private void updateOdometry(double dt) {
+        Vector2[] moduleVelocities = new Vector2[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            var module = modules[i];
+            module.updateSensors();
+
+            moduleVelocities[i] = Vector2.fromAngle(Rotation2.fromRadians(module.getCurrentAngle())).scale(module.getCurrentVelocity());
+        }
+
+        Rotation2 angle;
+        angle = navX.getAngle();
+
+        RigidTransform2 pose = odometry.update(angle, dt, moduleVelocities);
+
+        this.pose = pose;
+    }
+
+    private void updateModules(HolonomicDriveSignal signal, double dt) {
+        ChassisVelocity velocity;
+        if (signal == null) {
+            velocity = new ChassisVelocity(Vector2.ZERO, 0.0);
+        } else if (signal.isFieldOriented()) {
+            velocity = new ChassisVelocity(
+                    signal.getTranslation().rotateBy(getPose().rotation.inverse()),
+                    signal.getRotation()
+            );
+        } else {
+            velocity = new ChassisVelocity(signal.getTranslation(), signal.getRotation());
+        }
+
+        Vector2[] moduleOutputs = kinematics.toModuleVelocities(velocity);
+        SwerveKinematics.normalizeModuleVelocities(moduleOutputs, 1.0);
+
+        for (int i = 0; i < modules.length; i++) {
+            var module = modules[i];
+            module.setTargetVelocity(moduleOutputs[i]);
+            module.updateState(dt);
+        }
+    }
+
     @Override
     protected void initDefaultCommand() {
         setDefaultCommand(new DriveCommand());
+    }
+
+    @Override
+    public void periodic() {
+        var pose = getPose();
+        poseXEntry.setDouble(pose.translation.x);
+        poseYEntry.setDouble(pose.translation.y);
+        poseAngleEntry.setDouble(pose.rotation.toDegrees());
+
+        for (int i = 0; i < modules.length; i++) {
+            var module = modules[i];
+            moduleAngleEntries[i].setDouble(Math.toDegrees(module.getCurrentAngle()));
+        }
+    }
+
+
+    public void toggleFieldOriented(){
+        _isFieldOriented = !_isFieldOriented;
+    }
+
+    public boolean getFieldOriented(){
+        return _isFieldOriented;
+    }
+
+    public void toggleMinSpeed(){
+        if (curMinSpeed == 1.){
+            curMinSpeed = .25;
+        } else {
+            curMinSpeed += .25;
+        }
+    }
+
+    public double getMinSpeed(){
+        return curMinSpeed;
+    }
+
+    public Rotation2 getGyro(){
+        return gyroscope.getAngle();
+    }
+
+    public double getGyroRate(){
+        return gyroscope.getRate();
+    }
+
+    public Vector2 getKinematicPosition(){
+        return this.getPose().translation;
+    }
+
+    public Vector2 getKinematicVelocity(){
+        Vector2[] moduleVelocities = new Vector2[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            var module = modules[i];
+            module.updateSensors();
+            moduleVelocities[i] = Vector2.fromAngle(Rotation2.fromRadians(module.getCurrentAngle())).scale(module.getCurrentVelocity());
+        }
+        return kinematics.toChassisVelocity(moduleVelocities).getTranslationalVelocity();
+    }
+
+    public void reset(){
+        odometry.resetPose(RigidTransform2.ZERO);
+    }
+
+    public void stop(){
+        drive(Vector2.ZERO, 0, false);
     }
 }
