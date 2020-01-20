@@ -4,21 +4,27 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
 import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
+import com.swervedrivespecialties.exampleswerve.util.util;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.frcteam2910.common.control.PidConstants;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
 import org.frcteam2910.common.robot.drivers.NavX;
@@ -32,8 +38,6 @@ public class DrivetrainSubsystem extends Subsystem {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(359.11);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(238.53);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(140.59);
-
-    PidConstants turnPidConstants = new PidConstants(.05, 0., .0001);
 
     boolean isFieldOriented = true;
     double curMinControllerSpeed = .25;
@@ -78,6 +82,8 @@ public class DrivetrainSubsystem extends Subsystem {
 
     private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
 
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), new Pose2d());
+
     public DrivetrainSubsystem() {
         gyroscope.calibrate();
         gyroscope.setInverted(true); // You might not need to invert the gyro
@@ -96,6 +102,10 @@ public class DrivetrainSubsystem extends Subsystem {
         return instance;
     }
 
+    public void updateOdometry(){
+        odometry.update(getGyroRotation(), getModuleStates());
+    }
+
     @Override
     public void periodic() {
         frontLeftModule.updateSensors();
@@ -107,6 +117,8 @@ public class DrivetrainSubsystem extends Subsystem {
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
+
+        updateOdometry();
 
         SmartDashboard.putNumber("Gyroscope Angle", gyroscope.getAngle().toDegrees());
 
@@ -176,5 +188,55 @@ public class DrivetrainSubsystem extends Subsystem {
         SmartDashboard.putNumber("FR", frontRightModule.getCurrentAngle());
         SmartDashboard.putNumber("BL", backLeftModule.getCurrentAngle());
         SmartDashboard.putNumber("BR", backRightModule.getCurrentAngle());
+        SmartDashboard.putNumber("Kinematic Position X", getKinematicPosition().x);
+        SmartDashboard.putNumber("Kinematic Position Y", getKinematicPosition().y);
+        SmartDashboard.putNumber("Kinematics Theta", getGyroAngle().toDegrees());
+    }
+
+    public Rotation2d getGyroRotation(){
+        return Rotation2d.fromDegrees(gyroscope.getAngle().toDegrees());
+    }
+
+    private SwerveModuleState getCurrentState(SwerveModule mod){
+        double velo = util.inchesToMeters(mod.getCurrentVelocity());
+        Rotation2d rot = Rotation2d.fromDegrees(Math.toDegrees(mod.getCurrentAngle()));
+        return new SwerveModuleState(velo, rot);
+    }
+
+    private SwerveModuleState[] getModuleStates(){
+        return new SwerveModuleState[] {getCurrentState(frontLeftModule),
+                                        getCurrentState(frontRightModule), 
+                                        getCurrentState(backLeftModule), 
+                                        getCurrentState(backRightModule)};
+    }
+
+    public Vector2 getKinematicPosition(){
+        Pose2d odPos = odometry.getPoseMeters();
+        double x = util.metersToInches(odPos.getTranslation().getX());
+        double y = util.metersToInches(odPos.getTranslation().getY());
+        return new Vector2(x, y);
+    }
+
+    public Vector2 getKinematicVelocity(){
+        ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+        double x_dot = util.metersToInches(chassisSpeeds.vxMetersPerSecond);
+        double y_dot = util.metersToInches(chassisSpeeds.vxMetersPerSecond);
+        return new Vector2(x_dot, y_dot);
+    }
+
+    public double getGyroRate(){
+        return gyroscope.getRate();
+    }
+
+    public Rotation2 getGyroAngle(){
+        return gyroscope.getAngle();
+    }
+
+    public void reset(){
+        odometry.resetPosition(new Pose2d(), getGyroRotation());
+    }
+
+    public void stop(){
+        drive(new Translation2d(), 0.0, true);
     }
 }

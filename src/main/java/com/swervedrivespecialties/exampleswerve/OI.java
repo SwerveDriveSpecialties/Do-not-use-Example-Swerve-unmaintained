@@ -1,5 +1,7 @@
 package com.swervedrivespecialties.exampleswerve;
 
+import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
+import com.swervedrivespecialties.exampleswerve.commands.FollowTrajectory;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -24,6 +26,8 @@ public class OI {
         new JoystickButton(primaryJoystick, 4).whenPressed(
             new InstantCommand(() -> DrivetrainSubsystem.getInstance().toggleMinControllerSpeed())
         );
+
+        new JoystickButton(primaryJoystick, 6).whenPressed(new FollowTrajectory(Trajectories.testTrajectorySupplier));
     }
 
     public Joystick getPrimaryJoystick() {
