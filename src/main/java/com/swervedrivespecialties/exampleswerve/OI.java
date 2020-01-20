@@ -16,9 +16,21 @@ public class OI {
         new JoystickButton(primaryJoystick, 7).whenPressed(
                 new InstantCommand(() -> DrivetrainSubsystem.getInstance().resetGyroscope())
         );
+
+        new JoystickButton(primaryJoystick, 8).whenPressed(
+            new InstantCommand(() -> DrivetrainSubsystem.getInstance().toggleFieldOriented())
+        );
+
+        new JoystickButton(primaryJoystick, 4).whenPressed(
+            new InstantCommand(() -> DrivetrainSubsystem.getInstance().toggleMinControllerSpeed())
+        );
     }
 
     public Joystick getPrimaryJoystick() {
         return primaryJoystick;
+    }
+
+    public double getAnalogSpeedScale(){
+        return primaryJoystick.getRawAxis(3);
     }
 }
