@@ -23,5 +23,6 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         Scheduler.getInstance().run();
         System.out.println(DrivetrainSubsystem.getInstance().getMinControllerSpeed());
+        drivetrain.outPutToSDB();
     }
 }

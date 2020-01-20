@@ -170,4 +170,11 @@ public class DrivetrainSubsystem extends Subsystem {
     public void toggleFieldOriented(){
         setFieldOriented(!getFieldOriented());
     }
+
+    public void outPutToSDB(){
+        SmartDashboard.putNumber("FL", frontLeftModule.getCurrentAngle());
+        SmartDashboard.putNumber("FR", frontRightModule.getCurrentAngle());
+        SmartDashboard.putNumber("BL", backLeftModule.getCurrentAngle());
+        SmartDashboard.putNumber("BR", backRightModule.getCurrentAngle());
+    }
 }
