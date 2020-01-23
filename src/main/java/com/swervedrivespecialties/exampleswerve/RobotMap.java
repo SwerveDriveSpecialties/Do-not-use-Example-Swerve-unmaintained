@@ -1,7 +1,7 @@
 package com.swervedrivespecialties.exampleswerve;
 
 public class RobotMap {
-    public static final int DRIVETRAIN_FRONT_LEFT_ANGLE_MOTOR = 1; // PWM
+    public static final int DRIVETRAIN_FRONT_LEFT_ANGLE_MOTOR = 9; // PWM
     public static final int DRIVETRAIN_FRONT_LEFT_ANGLE_ENCODER = 0; // Analog
     public static final int DRIVETRAIN_FRONT_LEFT_DRIVE_MOTOR = 1; // CAN
 

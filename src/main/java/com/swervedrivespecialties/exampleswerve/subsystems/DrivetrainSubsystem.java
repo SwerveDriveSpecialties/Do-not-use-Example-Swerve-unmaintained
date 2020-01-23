@@ -24,7 +24,7 @@ import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
 import org.frcteam2910.common.robot.drivers.NavX;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder.MotorType;
 
-public class DrivetrainSubsystem extends Subsystem {
+public class DrivetrainSubsystem extends Subsystem{
     private static final double TRACKWIDTH = 21.5;
     private static final double WHEELBASE = 23.5;
 
