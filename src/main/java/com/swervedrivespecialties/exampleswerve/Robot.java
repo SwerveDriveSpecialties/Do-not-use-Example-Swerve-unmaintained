@@ -17,6 +17,19 @@ public class Robot extends TimedRobot{
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        if (!isDisabled()){
+            robotContainer.logAllData();
+        }
+    }
+
+    @Override
+    public void autonomousInit() {
+        robotContainer.setupLogging(true);
+    }
+
+    @Override
+    public void teleopInit() {
+        robotContainer.setupLogging(false);
     }
 
     public static RobotContainer getRobotContainer(){

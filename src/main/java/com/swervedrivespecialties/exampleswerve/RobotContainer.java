@@ -8,14 +8,13 @@
 package com.swervedrivespecialties.exampleswerve;
 
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
-import com.swervedrivespecialties.exampleswerve.commands.drive.DriveCommand;
 import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
+import com.swervedrivespecialties.exampleswerve.util.DataLogger;
+import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
+import com.swervedrivespecialties.exampleswerve.util.util;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -28,6 +27,8 @@ public class RobotContainer {
 
     private Joystick primaryJoystick = new Joystick(0);
     private Joystick secondaryJoystick = new Joystick(1);
+
+    private DataLogger _dataLogger = null;
 
     private void bindPrimaryJoystickButtons(){
         // final JoystickButton primary_a = new JoystickButton(primaryJoystick, 1);
@@ -89,5 +90,26 @@ public class RobotContainer {
 
     public void initDefaultCommands(){
         CommandScheduler.getInstance().setDefaultCommand(drive, DriveSubsystemCommands.getDriveCommand());
+    }
+
+    public void setupLogging(boolean auto){
+        if (auto){
+            _dataLogger = util.setupLogging("Auton");
+        } else {
+            _dataLogger = util.setupLogging("Teleop");
+        }
+    }
+
+    public void logAllData(){
+        if(_dataLogger != null) {    	
+	    	// create a new, empty logging class
+            LogDataBE logData = new LogDataBE();
+            if (drive != null){
+                drive.updateLogData(logData);
+            }
+
+            _dataLogger.WriteDataLine(logData);
+
+        }
     }
 }

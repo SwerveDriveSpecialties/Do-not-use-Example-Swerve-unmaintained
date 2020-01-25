@@ -3,6 +3,7 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
+import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.util;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.frcteam2910.common.control.PidConstants;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.drivers.SwerveModule;
 import org.frcteam2910.common.math.Rotation2;
@@ -35,6 +37,14 @@ public class DrivetrainSubsystem implements Subsystem {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(359.11);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(238.53);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(140.59);
+
+    private static final PidConstants ANGLE_CONSTANTS = new PidConstants(1.5, 0.0, 0.0001);
+
+    private double frontLeftTargetAngle = 0.;
+    private double frontRightTargetAngle = 0.;
+    private double backLeftTargetAngle = 0.;
+    private double backRightTargetAngle = 0.;
+
 
     boolean isFieldOriented = true;
     double curMinControllerSpeed = .25;
@@ -136,6 +146,12 @@ public class DrivetrainSubsystem implements Subsystem {
         }
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+
+        frontLeftTargetAngle = states[0].angle.getRadians();
+        frontRightTargetAngle = states[1].angle.getRadians();
+        backLeftTargetAngle = states[2].angle.getRadians();
+        backRightTargetAngle = states[3].angle.getRadians();
+
         frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
         backLeftModule.setTargetVelocity(states[2].speedMetersPerSecond, states[2].angle.getRadians());
@@ -229,5 +245,19 @@ public class DrivetrainSubsystem implements Subsystem {
 
     public void stop(){
         drive(new Translation2d(), 0.0, true);
+    }
+
+    public void updateLogData(LogDataBE logData){  
+      logData.AddData("Forward Velocity", Double.toString(getKinematicVelocity().x));
+      logData.AddData("Strafe Velocity", Double.toString(getKinematicVelocity().y));
+      logData.AddData("Angular Velocity", Double.toString(gyroscope.getRate()));  
+      logData.AddData("Front Left Angle", Double.toString(frontLeftModule.getCurrentAngle()));
+      logData.AddData("Front Right Angle", Double.toString(frontRightModule.getCurrentAngle()));
+      logData.AddData("Back Left Angle", Double.toString(backLeftModule.getCurrentAngle()));
+      logData.AddData("Back Right Angle", Double.toString(backRightModule.getCurrentAngle()));
+      logData.AddData("Front Left Desired Angle", Double.toString(frontLeftTargetAngle));
+      logData.AddData("Front Right Desired Angle", Double.toString(frontRightTargetAngle));
+      logData.AddData("Back Left Desired Angle", Double.toString(backLeftTargetAngle));
+      logData.AddData("Back Right Desired Angle", Double.toString(backRightTargetAngle));
     }
 }
