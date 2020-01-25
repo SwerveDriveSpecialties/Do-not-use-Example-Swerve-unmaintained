@@ -3,28 +3,33 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
-import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
+import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
+import com.swervedrivespecialties.exampleswerve.util.util;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.frcteam2910.common.control.PidConstants;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
 import org.frcteam2910.common.robot.drivers.NavX;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder.MotorType;
 
-public class DrivetrainSubsystem extends Subsystem{
+public class DrivetrainSubsystem implements Subsystem {
     private static final double TRACKWIDTH = 21.5;
     private static final double WHEELBASE = 23.5;
 
@@ -33,7 +38,13 @@ public class DrivetrainSubsystem extends Subsystem{
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(238.53);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(140.59);
 
-    PidConstants turnPidConstants = new PidConstants(.05, 0., .0001);
+    private static final PidConstants ANGLE_CONSTANTS = new PidConstants(1.5, 0.0, 0.0001);
+
+    private double frontLeftTargetAngle = 0.;
+    private double frontRightTargetAngle = 0.;
+    private double backLeftTargetAngle = 0.;
+    private double backRightTargetAngle = 0.;
+
 
     boolean isFieldOriented = true;
     double curMinControllerSpeed = .25;
@@ -78,6 +89,8 @@ public class DrivetrainSubsystem extends Subsystem{
 
     private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
 
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, getGyroRotation(), new Pose2d());
+
     public DrivetrainSubsystem() {
         gyroscope.calibrate();
         gyroscope.setInverted(true); // You might not need to invert the gyro
@@ -96,6 +109,10 @@ public class DrivetrainSubsystem extends Subsystem{
         return instance;
     }
 
+    public void updateOdometry(){
+        odometry.update(getGyroRotation(), getModuleStates());
+    }
+
     @Override
     public void periodic() {
         frontLeftModule.updateSensors();
@@ -107,6 +124,8 @@ public class DrivetrainSubsystem extends Subsystem{
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
+
+        updateOdometry();
 
         SmartDashboard.putNumber("Gyroscope Angle", gyroscope.getAngle().toDegrees());
 
@@ -127,6 +146,12 @@ public class DrivetrainSubsystem extends Subsystem{
         }
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+
+        frontLeftTargetAngle = states[0].angle.getRadians();
+        frontRightTargetAngle = states[1].angle.getRadians();
+        backLeftTargetAngle = states[2].angle.getRadians();
+        backRightTargetAngle = states[3].angle.getRadians();
+
         frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
         backLeftModule.setTargetVelocity(states[2].speedMetersPerSecond, states[2].angle.getRadians());
@@ -137,13 +162,7 @@ public class DrivetrainSubsystem extends Subsystem{
         gyroscope.setAdjustmentAngle(gyroscope.getUnadjustedAngle());
     }
 
-    @Override
-    protected void initDefaultCommand() {
-        setDefaultCommand(new DriveCommand());
-    }
-
     public void toggleMinControllerSpeed(){
-        System.out.println("Trying");
         if (curMinControllerSpeed < 1){
             curMinControllerSpeed += .25;
         } else {
@@ -169,5 +188,76 @@ public class DrivetrainSubsystem extends Subsystem{
 
     public void toggleFieldOriented(){
         setFieldOriented(!getFieldOriented());
+    }
+
+    public void outPutToSDB(){
+        SmartDashboard.putNumber("FL", frontLeftModule.getCurrentAngle());
+        SmartDashboard.putNumber("FR", frontRightModule.getCurrentAngle());
+        SmartDashboard.putNumber("BL", backLeftModule.getCurrentAngle());
+        SmartDashboard.putNumber("BR", backRightModule.getCurrentAngle());
+        SmartDashboard.putNumber("Kinematic Position X", getKinematicPosition().x);
+        SmartDashboard.putNumber("Kinematic Position Y", getKinematicPosition().y);
+        SmartDashboard.putNumber("Kinematics Theta", getGyroAngle().toDegrees());
+    }
+
+    public Rotation2d getGyroRotation(){
+        return Rotation2d.fromDegrees(gyroscope.getAngle().toDegrees());
+    }
+
+    private SwerveModuleState getCurrentState(SwerveModule mod){
+        double velo = util.inchesToMeters(mod.getCurrentVelocity());
+        Rotation2d rot = Rotation2d.fromDegrees(Math.toDegrees(mod.getCurrentAngle()));
+        return new SwerveModuleState(velo, rot);
+    }
+
+    private SwerveModuleState[] getModuleStates(){
+        return new SwerveModuleState[] {getCurrentState(frontLeftModule),
+                                        getCurrentState(frontRightModule), 
+                                        getCurrentState(backLeftModule), 
+                                        getCurrentState(backRightModule)};
+    }
+
+    public Vector2 getKinematicPosition(){
+        Pose2d odPos = odometry.getPoseMeters();
+        double x = util.metersToInches(odPos.getTranslation().getX());
+        double y = util.metersToInches(odPos.getTranslation().getY());
+        return new Vector2(x, y);
+    }
+
+    public Vector2 getKinematicVelocity(){
+        ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+        double x_dot = util.metersToInches(chassisSpeeds.vxMetersPerSecond);
+        double y_dot = util.metersToInches(chassisSpeeds.vxMetersPerSecond);
+        return new Vector2(x_dot, y_dot);
+    }
+
+    public double getGyroRate(){
+        return gyroscope.getRate();
+    }
+
+    public Rotation2 getGyroAngle(){
+        return gyroscope.getAngle();
+    }
+
+    public void reset(){
+        odometry.resetPosition(new Pose2d(), getGyroRotation());
+    }
+
+    public void stop(){
+        drive(new Translation2d(), 0.0, true);
+    }
+
+    public void updateLogData(LogDataBE logData){  
+      logData.AddData("Forward Velocity", Double.toString(getKinematicVelocity().x));
+      logData.AddData("Strafe Velocity", Double.toString(getKinematicVelocity().y));
+      logData.AddData("Angular Velocity", Double.toString(gyroscope.getRate()));  
+      logData.AddData("Front Left Angle", Double.toString(frontLeftModule.getCurrentAngle()));
+      logData.AddData("Front Right Angle", Double.toString(frontRightModule.getCurrentAngle()));
+      logData.AddData("Back Left Angle", Double.toString(backLeftModule.getCurrentAngle()));
+      logData.AddData("Back Right Angle", Double.toString(backRightModule.getCurrentAngle()));
+      logData.AddData("Front Left Desired Angle", Double.toString(frontLeftTargetAngle));
+      logData.AddData("Front Right Desired Angle", Double.toString(frontRightTargetAngle));
+      logData.AddData("Back Left Desired Angle", Double.toString(backLeftTargetAngle));
+      logData.AddData("Back Right Desired Angle", Double.toString(backRightTargetAngle));
     }
 }

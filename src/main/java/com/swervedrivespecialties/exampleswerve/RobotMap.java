@@ -16,4 +16,15 @@ public class RobotMap {
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR = 4; // PWM
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER = 3; // Analog
     public static final int DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR = 4; // CAN
+
+    public static final int SHOOTER_TALON_A = 1; 
+    public static final int SHOOTER_TALON_B = 13;
+    public static final int FEEDER_TALON = 12;
+    public static final int INFEED_TALON = 3;
+
+    	// Logging
+        // this is where the USB stick is mounted on the RoboRIO filesystem.  
+        // You can confirm by logging into the RoboRIO using WinSCP
+        public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
+        public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
 }
