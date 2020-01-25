@@ -1,30 +1,25 @@
 package com.swervedrivespecialties.exampleswerve;
 
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
-import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class Robot extends TimedRobot {
-    private static OI oi;
+public class Robot extends TimedRobot{
 
-    private static DrivetrainSubsystem drivetrain;
-
-    public static OI getOi() {
-        return oi;
-    }
+    static RobotContainer robotContainer;
 
     @Override
     public void robotInit() {
-        oi = new OI();
-        drivetrain = DrivetrainSubsystem.getInstance();
         Trajectories.generateAllTrajectories();
+        robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotPeriodic() {
-        Scheduler.getInstance().run();
-        System.out.println(DrivetrainSubsystem.getInstance().getMinControllerSpeed());
-        drivetrain.outPutToSDB();
+        CommandScheduler.getInstance().run();
+    }
+
+    public static RobotContainer getRobotContainer(){
+        return robotContainer;
     }
 }

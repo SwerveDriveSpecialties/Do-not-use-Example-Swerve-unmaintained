@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package com.swervedrivespecialties.exampleswerve.commands;
+package com.swervedrivespecialties.exampleswerve.commands.drive;
 
 import java.util.function.Supplier;
 
@@ -24,11 +24,11 @@ import org.frcteam2910.common.util.HolonomicDriveSignal;
 import org.frcteam2910.common.util.HolonomicFeedforward;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class FollowTrajectory extends Command {
-  DrivetrainSubsystem _drive = DrivetrainSubsystem.getInstance();
+public class FollowTrajectory extends CommandBase {
+  DrivetrainSubsystem _drive;
 
   ///////////// PATH FOLLOWING CONSTANTS //////////////////
   private static final double kMaxVelo = 12 * 12; //This is the physical max velocity of the machine, not of any path
@@ -37,9 +37,9 @@ public class FollowTrajectory extends Command {
   private static final double kPathFollowingTranslationP = .05;
   private static final double kPathFollowingTranslationI = 0;
   private static final double kPathFollowingTranslationD = 0;
-  private static final double kPathFollowingRotationP = .0085;
+  private static final double kPathFollowingRotationP = .013;
   private static final double kPathFollowingRotationI = 0;
-  private static final double kPathFollowingRotationD = .00025;
+  private static final double kPathFollowingRotationD = .001;
   ////////////////////////////////////////////////////////////
 
   //create appropriate constant classes and eventually a TrajectoryFollower from constants given above
@@ -59,14 +59,15 @@ public class FollowTrajectory extends Command {
   double dt;
 
 
-  public FollowTrajectory(Supplier<Trajectory> trajSupplier, InertiaGain i) {
-    requires(_drive);
+  public FollowTrajectory(DrivetrainSubsystem drive, Supplier<Trajectory> trajSupplier, InertiaGain i) {
+    _drive = drive;
+    addRequirements(_drive);
     trajectorySupplier = trajSupplier;
     iGain = i;
   }
 
-  public FollowTrajectory(Supplier<Trajectory> trajSupplier){
-    this(trajSupplier, InertiaGain.id);
+  public FollowTrajectory(DrivetrainSubsystem drive, Supplier<Trajectory> trajSupplier){
+    this(drive, trajSupplier, InertiaGain.id);
   }
 
   // Called when the command is initially scheduled.
@@ -93,8 +94,13 @@ public class FollowTrajectory extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end() {
-    _drive.stop();
+  public void end(boolean interrupted) {
+    if (interrupted){
+      _drive.stop();
+    } else {
+      CommandBase finishRotate = DriveSubsystemCommands.getRotateToAngleCommand(trajectory.calculateSegment(trajectory.getDuration()).rotation.toDegrees());
+      finishRotate.schedule();
+    }
   }
 
   // Returns true when the command should end.

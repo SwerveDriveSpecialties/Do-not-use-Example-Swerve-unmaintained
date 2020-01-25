@@ -3,15 +3,13 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
-import com.swervedrivespecialties.exampleswerve.commands.DriveCommand;
 import com.swervedrivespecialties.exampleswerve.util.util;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.frcteam2910.common.control.PidConstants;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.drivers.SwerveModule;
 import org.frcteam2910.common.math.Rotation2;
@@ -30,7 +27,7 @@ import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder;
 import org.frcteam2910.common.robot.drivers.NavX;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModuleBuilder.MotorType;
 
-public class DrivetrainSubsystem extends Subsystem {
+public class DrivetrainSubsystem implements Subsystem {
     private static final double TRACKWIDTH = 21.5;
     private static final double WHEELBASE = 23.5;
 
@@ -149,13 +146,7 @@ public class DrivetrainSubsystem extends Subsystem {
         gyroscope.setAdjustmentAngle(gyroscope.getUnadjustedAngle());
     }
 
-    @Override
-    protected void initDefaultCommand() {
-        setDefaultCommand(new DriveCommand());
-    }
-
     public void toggleMinControllerSpeed(){
-        System.out.println("Trying");
         if (curMinControllerSpeed < 1){
             curMinControllerSpeed += .25;
         } else {

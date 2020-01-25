@@ -40,8 +40,8 @@ public class Trajectories {
 
     private static void generateTestTrajectory(){
         Path testPath = new Path(testPathStartRotation);
-        testPath.addSegment(new PathLineSegment(Vector2.ZERO, new Vector2(60, 0)), testPathRotation);
-        //testPath.addSegment(new PathArcSegment(new Vector2(24, 0), new Vector2(72, -48), new Vector2(24, -48)), testPathRotation);
+        testPath.addSegment(new PathLineSegment(Vector2.ZERO, new Vector2(24, 0)), testPathStartRotation);
+        testPath.addSegment(new PathArcSegment(new Vector2(24, 0), new Vector2(72, -48), new Vector2(24, -48)), testPathRotation);
         testPath.subdivide(kSubdivideIterations);
         testTrajectory = new Trajectory(0.0, testTrajectoryEndVelo, testPath, testTrajectoryConstraints);
     }
@@ -85,6 +85,28 @@ public class Trajectories {
                                                              new MaxAccelerationConstraint(kMaxAccel), 
                                                              new CentripetalAccelerationConstraint(kMaxCentripedalAccel)};
         Path linePath = new Path(Rotation2.ZERO);
+        linePath.addSegment(new PathLineSegment(Vector2.ZERO, line), endRotation);
+        linePath.subdivide(kSubdivideIterations);
+        Trajectory resultTrajectory = new Trajectory(0.0, 0.0, linePath, lineTrajectoryConstraints);
+        return resultTrajectory;
+    }
+
+    public static Trajectory generateLineTrajectory(Vector2 line, Rotation2 startRotation, Rotation2 endRotation){
+        ITrajectoryConstraint[] lineTrajectoryConstraints = {new MaxVelocityConstraint(kDefaultMaxSpeed), 
+                                                             new MaxAccelerationConstraint(kMaxAccel), 
+                                                             new CentripetalAccelerationConstraint(kMaxCentripedalAccel)};
+        Path linePath = new Path(startRotation);
+        linePath.addSegment(new PathLineSegment(Vector2.ZERO, line), endRotation);
+        linePath.subdivide(kSubdivideIterations);
+        Trajectory resultTrajectory = new Trajectory(0.0, 0.0, linePath, lineTrajectoryConstraints);
+        return resultTrajectory;
+    }
+
+    public static Trajectory generateLineTrajectory(Vector2 line, double speed,  Rotation2 startRotation, Rotation2 endRotation){
+        ITrajectoryConstraint[] lineTrajectoryConstraints = {new MaxVelocityConstraint(speed), 
+                                                             new MaxAccelerationConstraint(kMaxAccel), 
+                                                             new CentripetalAccelerationConstraint(kMaxCentripedalAccel)};
+        Path linePath = new Path(startRotation);
         linePath.addSegment(new PathLineSegment(Vector2.ZERO, line), endRotation);
         linePath.subdivide(kSubdivideIterations);
         Trajectory resultTrajectory = new Trajectory(0.0, 0.0, linePath, lineTrajectoryConstraints);
