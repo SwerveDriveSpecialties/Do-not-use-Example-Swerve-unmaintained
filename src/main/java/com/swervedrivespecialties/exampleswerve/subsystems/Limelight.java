@@ -97,17 +97,4 @@ public class Limelight extends SubsystemBase {
   public boolean getHasTarget() {
     return tv.getDouble(0.0) != 0.0;
   }
-
-  public void splitLLStream() {
-    MjpegServer _lime = CameraServer.getInstance().addServer("limelight");
-    CvSink _sink = CameraServer.getInstance().getVideo(_lime.getSource());
-
-    Mat source = new Mat();
-    CvSource outputStrm = CameraServer.getInstance().putVideo("strm", 320, 240);
-
-    _sink.grabFrame(source);
-    Mat output = source.colRange(320, 640);
-    outputStrm.putFrame(output);
-  }
-
 }
