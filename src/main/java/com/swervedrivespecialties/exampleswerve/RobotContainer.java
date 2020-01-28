@@ -10,6 +10,7 @@ package com.swervedrivespecialties.exampleswerve;
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
 import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
 import com.swervedrivespecialties.exampleswerve.util.DataLogger;
 import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.util;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
 
     private DrivetrainSubsystem drive = DrivetrainSubsystem.getInstance();
+    private Limelight _limelight = Limelight.getInstance();
 
     private Joystick primaryJoystick = new Joystick(0);
     private Joystick secondaryJoystick = new Joystick(1);
@@ -33,7 +35,7 @@ public class RobotContainer {
     private void bindPrimaryJoystickButtons(){
         // final JoystickButton primary_a = new JoystickButton(primaryJoystick, 1);
         final JoystickButton primary_b = new JoystickButton(primaryJoystick, 2);
-        // final JoystickButton primary_x = new JoystickButton(primaryJoystick, 3);
+        final JoystickButton primary_x = new JoystickButton(primaryJoystick, 3);
         final JoystickButton primary_y = new JoystickButton(primaryJoystick, 4);
         final JoystickButton primary_left_bumper = new JoystickButton(primaryJoystick, 5);
         final JoystickButton primary_right_bumper = new JoystickButton(primaryJoystick, 6);
@@ -46,6 +48,7 @@ public class RobotContainer {
         primary_right_bumper.whenPressed(DriveSubsystemCommands.getFollowTrajectoryCommand(Trajectories.testTrajectorySupplier));
         // primary_left_bumper.whenPressed(DriveSubsystemCommands.getRotateToAngleCommand(180));
         primary_left_bumper.toggleWhenPressed(DriveSubsystemCommands.getMikeeDriveCommand());
+        primary_x.whenPressed(DriveSubsystemCommands.getLLRotateToTargetCommand());
     }
 
     private void bindSecondaryJoystickButtons(){

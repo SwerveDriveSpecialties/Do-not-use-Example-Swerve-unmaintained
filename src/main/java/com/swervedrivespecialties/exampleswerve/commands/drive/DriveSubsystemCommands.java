@@ -10,6 +10,7 @@ package com.swervedrivespecialties.exampleswerve.commands.drive;
 import java.util.function.Supplier;
 
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
 import com.swervedrivespecialties.exampleswerve.util.InertiaGain;
 
 import org.frcteam2910.common.control.Trajectory;
@@ -94,5 +95,9 @@ public class DriveSubsystemCommands {
 
     public static CommandBase getMikeeDriveCommand(){
         return new MikeeDrive(drivetrainSubsystem);
+    }
+    
+    public static CommandBase getLLRotateToTargetCommand(){
+        return new LLRotateToTarget(Limelight.getInstance(), drivetrainSubsystem).withTimeout(2.5);
     }
 }
