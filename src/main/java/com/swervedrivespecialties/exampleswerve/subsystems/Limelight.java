@@ -7,16 +7,6 @@
 
 package com.swervedrivespecialties.exampleswerve.subsystems;
 
-import org.opencv.core.Mat;
-import org.opencv.osgi.OpenCVInterface;
-import org.opencv.video.Video;
-
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.VideoSink;
-import edu.wpi.cscore.VideoSource;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -86,7 +76,6 @@ public class Limelight extends SubsystemBase {
       distance = 0;
       break;
     }
-    ;
     return distance;
   }
 
