@@ -10,9 +10,9 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class Limelight extends SubsystemBase {
+public class Limelight implements Subsystem {
   private NetworkTable nt = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry tx = nt.getEntry("tx");
   private NetworkTableEntry ta = nt.getEntry("ta");

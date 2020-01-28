@@ -1,6 +1,8 @@
 package com.swervedrivespecialties.exampleswerve;
 
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -30,6 +32,9 @@ public class Robot extends TimedRobot{
     @Override
     public void teleopInit() {
         robotContainer.setupLogging(false);
+    }
+    @Override
+    public void teleopPeriodic(){
     }
 
     public static RobotContainer getRobotContainer(){
