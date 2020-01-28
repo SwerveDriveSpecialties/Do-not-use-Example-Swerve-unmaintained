@@ -51,32 +51,37 @@ public class DrivetrainSubsystem implements Subsystem {
 
     private static DrivetrainSubsystem instance;
 
+    CANSparkMax frontLeft = new CANSparkMax(RobotMap.DRIVETRAIN_FRONT_LEFT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+    CANSparkMax frontRight = new CANSparkMax(RobotMap.DRIVETRAIN_FRONT_RIGHT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+    CANSparkMax backLeft = new CANSparkMax(RobotMap.DRIVETRAIN_BACK_LEFT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+    CANSparkMax backRight = new CANSparkMax(RobotMap.DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+
     private final SwerveModule frontLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(RobotMap.DRIVETRAIN_FRONT_LEFT_ANGLE_ENCODER), FRONT_LEFT_ANGLE_OFFSET)
             .angleMotor(new Spark(RobotMap.DRIVETRAIN_FRONT_LEFT_ANGLE_MOTOR), MotorType.NEO)
-            .driveMotor(new CANSparkMax(RobotMap.DRIVETRAIN_FRONT_LEFT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(frontLeft,
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
     private final SwerveModule frontRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(RobotMap.DRIVETRAIN_FRONT_RIGHT_ANGLE_ENCODER), FRONT_RIGHT_ANGLE_OFFSET)
             .angleMotor(new Spark(RobotMap.DRIVETRAIN_FRONT_RIGHT_ANGLE_MOTOR), MotorType.NEO)
-            .driveMotor(new CANSparkMax(RobotMap.DRIVETRAIN_FRONT_RIGHT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(frontRight,
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
     private final SwerveModule backLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(RobotMap.DRIVETRAIN_BACK_LEFT_ANGLE_ENCODER), BACK_LEFT_ANGLE_OFFSET)
             .angleMotor(new Spark(RobotMap.DRIVETRAIN_BACK_LEFT_ANGLE_MOTOR), MotorType.NEO)
-            .driveMotor(new CANSparkMax(RobotMap.DRIVETRAIN_BACK_LEFT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(backLeft,
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
     private final SwerveModule backRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER), BACK_RIGHT_ANGLE_OFFSET)
             .angleMotor(new Spark(RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR), MotorType.NEO)
-            .driveMotor(new CANSparkMax(RobotMap.DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(backRight,
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
@@ -248,16 +253,24 @@ public class DrivetrainSubsystem implements Subsystem {
     }
 
     public void updateLogData(LogDataBE logData){  
-      logData.AddData("Forward Velocity", Double.toString(getKinematicVelocity().x));
-      logData.AddData("Strafe Velocity", Double.toString(getKinematicVelocity().y));
-      logData.AddData("Angular Velocity", Double.toString(gyroscope.getRate()));  
-      logData.AddData("Front Left Angle", Double.toString(frontLeftModule.getCurrentAngle()));
-      logData.AddData("Front Right Angle", Double.toString(frontRightModule.getCurrentAngle()));
-      logData.AddData("Back Left Angle", Double.toString(backLeftModule.getCurrentAngle()));
-      logData.AddData("Back Right Angle", Double.toString(backRightModule.getCurrentAngle()));
-      logData.AddData("Front Left Desired Angle", Double.toString(frontLeftTargetAngle));
-      logData.AddData("Front Right Desired Angle", Double.toString(frontRightTargetAngle));
-      logData.AddData("Back Left Desired Angle", Double.toString(backLeftTargetAngle));
-      logData.AddData("Back Right Desired Angle", Double.toString(backRightTargetAngle));
+    //   logData.AddData("Forward Velocity", Double.toString(getKinematicVelocity().x));
+    //   logData.AddData("Strafe Velocity", Double.toString(getKinematicVelocity().y));
+    //   logData.AddData("Angular Velocity", Double.toString(gyroscope.getRate()));  
+    //   logData.AddData("Front Left Angle", Double.toString(frontLeftModule.getCurrentAngle()));
+    //   logData.AddData("Front Right Angle", Double.toString(frontRightModule.getCurrentAngle()));
+    //   logData.AddData("Back Left Angle", Double.toString(backLeftModule.getCurrentAngle()));
+    //   logData.AddData("Back Right Angle", Double.toString(backRightModule.getCurrentAngle()));
+    //   logData.AddData("Front Left Desired Angle", Double.toString(frontLeftTargetAngle));
+    //   logData.AddData("Front Right Desired Angle", Double.toString(frontRightTargetAngle));
+    //   logData.AddData("Back Left Desired Angle", Double.toString(backLeftTargetAngle));
+    //   logData.AddData("Back Right Desired Angle", Double.toString(backRightTargetAngle));
+    logData.AddData("Velocity", Double.toString(getKinematicVelocity().length));
+    }
+
+    public void setCurrentLimit(int curLim){
+        frontLeft.setSmartCurrentLimit(curLim);
+        frontRight.setSmartCurrentLimit(curLim);
+        backLeft.setSmartCurrentLimit(curLim);
+        backRight.setSmartCurrentLimit(curLim);
     }
 }

@@ -23,11 +23,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class RotateToAngle extends CommandBase {
 
   final static double kDefaultTimeout = 2;
+  final static double kMaxRotation = .75;
   double timeout;
   double starttime;
 
   private static DrivetrainSubsystem _drive;
-  private PidController _pidController = new PidController(new PidConstants(0.013, 0, 0.001));
+  private PidController _pidController = new PidController(new PidConstants(0.013, 0, 0.0008));
   private double _currentTime, _target;
   private double kAcceptableError = 2.0;
 
@@ -39,7 +40,7 @@ public class RotateToAngle extends CommandBase {
     _target = targetAngleDegrees;
     _pidController.setContinuous(true);
     _pidController.setInputRange(-180, 180);
-    _pidController.setOutputRange(-1, 1);
+    _pidController.setOutputRange(-kMaxRotation, kMaxRotation);
     _pidController.setSetpoint(0);
     timeout = timeOut;
   }

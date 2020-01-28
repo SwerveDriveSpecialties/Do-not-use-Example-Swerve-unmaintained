@@ -91,4 +91,8 @@ public class DriveSubsystemCommands {
     public static CommandBase getToggleFieldOrientedCommand(){
         return new ToggleSpeed(drivetrainSubsystem);
     }
+
+    public static CommandBase getMikeeDriveCommand(){
+        return new MikeeDrive(drivetrainSubsystem);
+    }
 }

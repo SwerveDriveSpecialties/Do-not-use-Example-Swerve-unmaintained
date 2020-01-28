@@ -15,8 +15,8 @@ import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.util;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -32,7 +32,7 @@ public class RobotContainer {
 
     private void bindPrimaryJoystickButtons(){
         // final JoystickButton primary_a = new JoystickButton(primaryJoystick, 1);
-        // final JoystickButton primary_b = new JoystickButton(primaryJoystick, 2);
+        final JoystickButton primary_b = new JoystickButton(primaryJoystick, 2);
         // final JoystickButton primary_x = new JoystickButton(primaryJoystick, 3);
         final JoystickButton primary_y = new JoystickButton(primaryJoystick, 4);
         final JoystickButton primary_left_bumper = new JoystickButton(primaryJoystick, 5);
@@ -44,7 +44,8 @@ public class RobotContainer {
         primary_start.whenPressed(DriveSubsystemCommands.getToggleFieldOrientedCommand());
         primary_y.whenPressed(DriveSubsystemCommands.getToggleSpeedCommand());
         primary_right_bumper.whenPressed(DriveSubsystemCommands.getFollowTrajectoryCommand(Trajectories.testTrajectorySupplier));
-        primary_left_bumper.whenPressed(DriveSubsystemCommands.getRotateToAngleCommand(180));
+        // primary_left_bumper.whenPressed(DriveSubsystemCommands.getRotateToAngleCommand(180));
+        primary_left_bumper.toggleWhenPressed(DriveSubsystemCommands.getMikeeDriveCommand());
     }
 
     private void bindSecondaryJoystickButtons(){
@@ -111,5 +112,9 @@ public class RobotContainer {
             _dataLogger.WriteDataLine(logData);
 
         }
+    }
+
+    public static void configureDrive(){
+        DrivetrainSubsystem.getInstance().setCurrentLimit(40);
     }
 }
