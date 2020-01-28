@@ -7,6 +7,10 @@
 
 package com.swervedrivespecialties.exampleswerve.subsystems;
 
+import org.frcteam2910.common.math.RigidTransform2;
+import org.frcteam2910.common.math.Rotation2;
+import org.frcteam2910.common.math.Vector2;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -85,5 +89,10 @@ public class Limelight implements Subsystem {
 
   public boolean getHasTarget() {
     return tv.getDouble(0.0) != 0.0;
+  }
+
+  //This will always have you pointed at the vector currently to your target, getting the angle for a pinpoint target is much harder and not done here
+  public RigidTransform2 getToTarget(Target target){
+    return new RigidTransform2(Vector2.fromAngle(Rotation2.fromDegrees(getAngle1())).scale(getDistanceToTarget(target)), Rotation2.fromDegrees(getAngle1()));
   }
 }
