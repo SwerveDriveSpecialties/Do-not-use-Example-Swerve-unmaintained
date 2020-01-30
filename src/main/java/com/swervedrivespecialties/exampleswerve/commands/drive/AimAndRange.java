@@ -8,9 +8,10 @@
 package com.swervedrivespecialties.exampleswerve.commands.drive;
 
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight.Target;
 
 import org.frcteam2910.common.math.RigidTransform2;
-import org.frcteam2910.common.robot.drivers.Limelight;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -20,30 +21,22 @@ public class AimAndRange extends CommandBase {
   double targetRange;
   RigidTransform2 toTarget;
 
-  public AimAndRange(DrivetrainSubsystem drive) {
+  public AimAndRange(DrivetrainSubsystem drive, double range) {
     _drive = drive;
+    targetRange = range;
   }
 
   @Override
   public void initialize() {
-    toTarget = RigidTransform2.ZERO; //Change this to get Limelight values
+    toTarget = Limelight.getInstance().getToTarget(Target.HIGH); //Change this to get Limelight values
     double len = toTarget.translation.length;
     if (len > 0){
-      DriveSubsystemCommands.getLineDriveCommand(toTarget.translation.scale((len - targetRange) / len), false, toTarget.rotation).schedule();;
+      DriveSubsystemCommands.getLineDriveCommand(toTarget.translation.scale((len - targetRange) / len), false, toTarget.rotation).schedule();
+    } else {
+      System.out.println("Limelight Doesn't See Target");
     }
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return true;

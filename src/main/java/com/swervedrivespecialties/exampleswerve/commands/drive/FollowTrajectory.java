@@ -39,7 +39,7 @@ public class FollowTrajectory extends CommandBase {
   private static final double kPathFollowingTranslationP = .05;
   private static final double kPathFollowingTranslationI = 0;
   private static final double kPathFollowingTranslationD = 0;
-  private static final double kPathFollowingRotationP = .9;
+  private static final double kPathFollowingRotationP = .5;
   private static final double kPathFollowingRotationI = 0;
   private static final double kPathFollowingRotationD = .06;
   ////////////////////////////////////////////////////////////
