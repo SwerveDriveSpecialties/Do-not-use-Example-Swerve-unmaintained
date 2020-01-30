@@ -9,6 +9,7 @@ package com.swervedrivespecialties.exampleswerve;
 
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
 import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCommands;
+import com.swervedrivespecialties.exampleswerve.commands.shooter.ShooterSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
 import com.swervedrivespecialties.exampleswerve.util.DataLogger;
@@ -16,6 +17,7 @@ import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.util;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -52,14 +54,17 @@ public class RobotContainer {
     }
 
     private void bindSecondaryJoystickButtons(){
-        // final JoystickButton secondary_a = new JoystickButton(primaryJoystick, 1);
-        // final JoystickButton secondary_b = new JoystickButton(primaryJoystick, 2);
+        final JoystickButton secondary_a = new JoystickButton(secondaryJoystick, 1);
+        final JoystickButton secondary_b = new JoystickButton(secondaryJoystick, 2);
         // final JoystickButton secondary_x = new JoystickButton(primaryJoystick, 3);
         // final JoystickButton secondary_y = new JoystickButton(primaryJoystick, 4);
         // final JoystickButton secondary_left_bumper = new JoystickButton(primaryJoystick, 5);
         // final JoystickButton secondary_right_bumber= new JoystickButton(primaryJoystick, 6);
         // final JoystickButton secondary_back = new JoystickButton(primaryJoystick, 7);
         // final JoystickButton secondary_start = new JoystickButton(primaryJoystick, 8);
+
+        secondary_a.whenPressed(ShooterSubsystemCommands.getFeedFeederCommand());
+        secondary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterCommand());
     }
 
     public RobotContainer(){

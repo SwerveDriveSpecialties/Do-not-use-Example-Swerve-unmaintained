@@ -72,13 +72,14 @@ public class RotateToAngle extends CommandBase {
     strafe = Utilities.deadband(strafe);
     // Square the strafe stick
     strafe = speedScale * Math.copySign(Math.pow(strafe, 2.0), strafe);
+
     double localTime = Timer.getFPGATimestamp();
     double deltaTime = localTime - _currentTime;
     _currentTime = localTime;
 
     double err = getMinAngleDiff(_drive.getGyroAngle().toDegrees(), _target);
     double rot =  _pidController.calculate(err, deltaTime);
-    _drive.drive(new Translation2d(0.0, 0.0), rot, true);
+    _drive.drive(new Translation2d(forward, strafe), rot, true); //because the angle is continually changing, it's assumed if you drive while calling this you intend to drive field oriented
     
     SmartDashboard.putNumber("AngleError", _target - _drive.getGyroAngle().toDegrees());
     SmartDashboard.putNumber("Rotation Value", rot);
