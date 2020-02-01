@@ -12,6 +12,7 @@ import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCom
 import com.swervedrivespecialties.exampleswerve.commands.shooter.ShooterSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
+import com.swervedrivespecialties.exampleswerve.subsystems.Shooter;
 import com.swervedrivespecialties.exampleswerve.util.DataLogger;
 import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.util;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
 
     private DrivetrainSubsystem drive = DrivetrainSubsystem.getInstance();
+    private Shooter shooter = Shooter.getInstance();
     private Limelight _limelight = Limelight.getInstance();
 
     private Joystick primaryJoystick = new Joystick(0);
@@ -35,7 +37,7 @@ public class RobotContainer {
     private DataLogger _dataLogger = null;
 
     private void bindPrimaryJoystickButtons(){
-        // final JoystickButton primary_a = new JoystickButton(primaryJoystick, 1);
+        final JoystickButton primary_a = new JoystickButton(primaryJoystick, 1);
         final JoystickButton primary_b = new JoystickButton(primaryJoystick, 2);
         final JoystickButton primary_x = new JoystickButton(primaryJoystick, 3);
         final JoystickButton primary_y = new JoystickButton(primaryJoystick, 4);
@@ -44,6 +46,8 @@ public class RobotContainer {
         final JoystickButton primary_back = new JoystickButton(primaryJoystick, 7);
         final JoystickButton primary_start = new JoystickButton(primaryJoystick, 8);
 
+        primary_a.whenPressed(ShooterSubsystemCommands.getFeedFeederCommand());
+        primary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
         primary_back.whenPressed(DriveSubsystemCommands.getZeroGyroCommand());
         primary_start.whenPressed(DriveSubsystemCommands.getToggleFieldOrientedCommand());
         primary_y.whenPressed(DriveSubsystemCommands.getToggleSpeedCommand());
@@ -54,8 +58,8 @@ public class RobotContainer {
     }
 
     private void bindSecondaryJoystickButtons(){
-        final JoystickButton secondary_a = new JoystickButton(secondaryJoystick, 1);
-        final JoystickButton secondary_b = new JoystickButton(secondaryJoystick, 2);
+        // final JoystickButton secondary_a = new JoystickButton(secondaryJoystick, 1);
+        // final JoystickButton secondary_b = new JoystickButton(secondaryJoystick, 2);
         // final JoystickButton secondary_x = new JoystickButton(primaryJoystick, 3);
         // final JoystickButton secondary_y = new JoystickButton(primaryJoystick, 4);
         // final JoystickButton secondary_left_bumper = new JoystickButton(primaryJoystick, 5);
@@ -63,8 +67,8 @@ public class RobotContainer {
         // final JoystickButton secondary_back = new JoystickButton(primaryJoystick, 7);
         // final JoystickButton secondary_start = new JoystickButton(primaryJoystick, 8);
 
-        secondary_a.whenPressed(ShooterSubsystemCommands.getFeedFeederCommand());
-        secondary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterCommand());
+        //secondary_a.whenPressed(ShooterSubsystemCommands.getFeedFeederCommand());
+        //secondary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
     }
 
     public RobotContainer(){
@@ -124,5 +128,9 @@ public class RobotContainer {
 
     public static void configureDrive(){
         DrivetrainSubsystem.getInstance().setCurrentLimit(40);
+    }
+
+    public void outputToSDB(){
+        shooter.outputToSDB();
     }
 }

@@ -24,6 +24,7 @@ public class Robot extends TimedRobot{
         CommandScheduler.getInstance().run();
         if (!isDisabled()){
             robotContainer.logAllData();
+            robotContainer.outputToSDB();
         }
     }
 
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot{
     @Override
     public void teleopInit() {
         robotContainer.setupLogging(false);
+        CommandScheduler.getInstance().cancelAll();
     }
     @Override
     public void teleopPeriodic(){
