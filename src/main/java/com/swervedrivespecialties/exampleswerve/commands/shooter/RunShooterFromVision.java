@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 public class RunShooterFromVision extends CommandBase {
   Shooter _shooter;
   Limelight _ll = Limelight.getInstance();
-  double curTargVelo = 0;
+  double curTargVelo = .7;
 
   public RunShooterFromVision(Shooter shooter) {
     _shooter = shooter;
@@ -29,14 +29,16 @@ public class RunShooterFromVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    getSpeed();
-    _shooter.runShooter(curTargVelo);
+    //getSpeed();
+    curTargVelo = .7;
+    _shooter.runShooter(.7);
+    System.out.println("Initializing");
   }
 
   @Override 
   public void execute(){
-    getSpeed();
-    _shooter.runShooter(curTargVelo);
+    //getSpeed();
+    _shooter.runShooter(.7);
   }
 
   @Override
@@ -46,14 +48,14 @@ public class RunShooterFromVision extends CommandBase {
 
   @Override 
   public void end(boolean interrupted){
-    _shooter.runShooter(0);
+    _shooter.runShooter(0.0);
   }
 
-  private void getSpeed(){
-    if (_ll.getDistanceToTarget(Target.HIGH) > 0 && _ll.getDistanceToTarget(Target.HIGH) < 420){
-      double dist = util.inchesToFeet(_ll.getDistanceToTarget(Target.HIGH));
-      double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
-      curTargVelo = targetSpeed;
-    }
-  }
+  // private void getSpeed(){
+  //   if (_ll.getDistanceToTarget(Target.HIGH) > 0 && _ll.getDistanceToTarget(Target.HIGH) < 420){
+  //     double dist = util.inchesToFeet(_ll.getDistanceToTarget(Target.HIGH));
+  //     double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
+  //     curTargVelo = targetSpeed;
+  //   }
+  // }
 }

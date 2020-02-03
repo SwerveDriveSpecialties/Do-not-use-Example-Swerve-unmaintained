@@ -38,9 +38,10 @@ public class Shooter implements Subsystem{
         return _instance;
     }
 
-    TalonSRX _shooterTalon = new TalonSRX(RobotMap.SHOOTER_TALON);
+    // TalonSRX _shooterTalon = new TalonSRX(RobotMap.SHOOTER_TALON);
     CANSparkMax _shooterNEO = new CANSparkMax(RobotMap.SHOOTER_NEO, MotorType.kBrushless);
-    TalonSRX _feederTalon = new TalonSRX(RobotMap.FEEDER_TALON);
+    CANSparkMax _kickerNEO = new CANSparkMax(RobotMap.SHOOTER_NEO, MotorType.kBrushed);
+    // TalonSRX _feederTalon = new TalonSRX(RobotMap.FEEDER_TALON);
 
     CANPIDController _pidController;
     CANEncoder _encoder;
@@ -68,23 +69,26 @@ public class Shooter implements Subsystem{
     
     public void runFeeder(boolean shouldRun){
         double runSpeed = shouldRun ? kFeederDefaultVBus : 0.;
-        _feederTalon.set(ControlMode.PercentOutput, runSpeed);
+        //_feederTalon.set(ControlMode.PercentOutput, runSpeed);
     }
 
     public void runShooter(double spd){
         SmartDashboard.putNumber("spd", spd);
         SmartDashboard.putNumber("Target RPM", spd);
         SmartDashboard.putNumber("velo", _encoder.getVelocity());
-        double talonSpeed = spd > 0 ? -spd / kMaxSpeed : 0.0;
-        _shooterTalon.set(ControlMode.PercentOutput, talonSpeed);
-       if (spd >= 20)
-       {
-           _pidController.setReference(spd, ControlType.kVelocity);
-       }
-       else
-       {
-           _shooterNEO.set(0.0);
-       }
+        System.out.println("NEO SPD: " + spd);
+        //double talonSpeed = spd > 0 ? -spd / kMaxSpeed : 0.0;
+
+        _shooterNEO.set(spd);
+        _kickerNEO.set(spd);
+    //    if (spd >= 20)
+    //    {
+    //        _pidController.setReference(spd, ControlType.kVelocity);
+    //    }
+    //    else
+    //    {
+    //        _shooterNEO.set(0.0);
+    //    }
     }
 
     public void outputToSDB(){
