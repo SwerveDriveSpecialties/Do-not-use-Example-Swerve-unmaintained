@@ -39,7 +39,8 @@ public class Shooter implements Subsystem{
     }
 
     TalonSRX _shooterTalon = new TalonSRX(RobotMap.SHOOTER_TALON);
-    CANSparkMax _shooterNEO = new CANSparkMax(RobotMap.SHOOTER_NEO, MotorType.kBrushless);
+    CANSparkMax _shooterNEO = new CANSparkMax(RobotMap.SHOOTER_MASTER_NEO, MotorType.kBrushless);
+    CANSparkMax _shooterSlave = new CANSparkMax(RobotMap.SHOOTER_SLAVE_NEO, MotorType.kBrushless);
     TalonSRX _feederTalon = new TalonSRX(RobotMap.FEEDER_TALON);
 
     CANPIDController _pidController;
@@ -59,6 +60,8 @@ public class Shooter implements Subsystem{
         _encoder = _shooterNEO.getEncoder();
         _pidController = new CANPIDController(_shooterNEO);
 
+        //_shooterSlave.follow(_shooterNEO, true);
+
         _pidController.setP(_P);
         _pidController.setI(_I);
         _pidController.setD(_D);
@@ -68,24 +71,32 @@ public class Shooter implements Subsystem{
     
     public void runFeeder(boolean shouldRun){
         double runSpeed = shouldRun ? kFeederDefaultVBus : 0.;
-        _feederTalon.set(ControlMode.PercentOutput, runSpeed);
+        _feederTalon.set(ControlMode.PercentOutput, -runSpeed);
     }
 
     public void runShooter(double spd){
         SmartDashboard.putNumber("spd", spd);
         SmartDashboard.putNumber("Target RPM", spd);
         SmartDashboard.putNumber("velo", _encoder.getVelocity());
-        double talonSpeed = spd > 0 ? -spd / kMaxSpeed : 0.0;
-        _shooterTalon.set(ControlMode.PercentOutput, talonSpeed);
-       if (spd >= 20)
-       {
-           _pidController.setReference(spd, ControlType.kVelocity);
-       }
-       else
-       {
-           _shooterNEO.set(0.0);
-       }
+        double talonSpeed = spd > 0 ? spd / kMaxSpeed : 0.0;
+
+        _shooterTalon.set(ControlMode.PercentOutput, -talonSpeed);
+      if (spd <= 20)
+      {
+        _shooterNEO.set(-0.0);
+        _shooterSlave.set(0.0);
+      
+      }
+      else{
+       _shooterNEO.set(-0.95);
+       _shooterSlave.set(0.95);
+      }
     }
+    //public void runNeo()
+    //{
+     //   _shooterNEO.set(0.8);
+        
+   // }
 
     public void outputToSDB(){
         SmartDashboard.putNumber("Distance to Target", Limelight.getInstance().getDistanceToTarget(Target.HIGH));

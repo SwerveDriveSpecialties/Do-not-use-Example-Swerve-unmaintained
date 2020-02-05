@@ -2,6 +2,7 @@ package com.swervedrivespecialties.exampleswerve;
 
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
+import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
 import com.swervedrivespecialties.exampleswerve.subsystems.Shooter;
 
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot{
 
     static RobotContainer robotContainer;
+    static Infeed _infeed = Infeed.get_instance();
 
     @Override
     public void robotInit() {
@@ -26,6 +28,7 @@ public class Robot extends TimedRobot{
             robotContainer.logAllData();
             robotContainer.outputToSDB();
         }
+        _infeed.PrintSmartDash();
     }
 
     @Override

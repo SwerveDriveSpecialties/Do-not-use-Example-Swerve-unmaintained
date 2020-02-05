@@ -21,4 +21,12 @@ public class ShooterSubsystemCommands {
     public static CommandBase getRunShooterFromVisionCommand(){
         return new RunShooterFromVision(shooter);
     }
+    public static CommandBase getRunConveyorMotors()
+    {
+        return new runConveyorMotors(shooter);
+    }
+    public static CommandBase getTriggerCommand()
+    {
+        return new Trigger(shooter);
+    }
 }

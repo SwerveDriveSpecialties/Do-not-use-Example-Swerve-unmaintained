@@ -17,9 +17,10 @@ public class RobotMap {
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER = 3; // Analog
     public static final int DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR = 8; // CAN
 
-    public static final int SHOOTER_TALON = 12;
-    public static final int SHOOTER_NEO  = 13; 
-    public static final int FEEDER_TALON = 1;
+    public static final int SHOOTER_TALON = 11;
+    public static final int SHOOTER_SLAVE_NEO  = 9; 
+    public static final int SHOOTER_MASTER_NEO  = 10; 
+    public static final int FEEDER_TALON = 12;
 
     	// Logging
         // this is where the USB stick is mounted on the RoboRIO filesystem.  

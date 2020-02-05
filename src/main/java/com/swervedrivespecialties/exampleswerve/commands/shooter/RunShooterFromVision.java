@@ -30,13 +30,14 @@ public class RunShooterFromVision extends CommandBase {
   @Override
   public void initialize() {
     getSpeed();
-    _shooter.runShooter(curTargVelo);
+    _shooter.runShooter(3000);
   }
 
   @Override 
   public void execute(){
     getSpeed();
-    _shooter.runShooter(curTargVelo);
+    _shooter.runShooter(3000);
+    System.out.println("hudghfhew");
   }
 
   @Override
@@ -50,10 +51,10 @@ public class RunShooterFromVision extends CommandBase {
   }
 
   private void getSpeed(){
-    if (_ll.getDistanceToTarget(Target.HIGH) > 0 && _ll.getDistanceToTarget(Target.HIGH) < 420){
-      double dist = util.inchesToFeet(_ll.getDistanceToTarget(Target.HIGH));
-      double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
-      curTargVelo = targetSpeed;
+    //if (_ll.getDistanceToTarget(Target.HIGH) > 0 && _ll.getDistanceToTarget(Target.HIGH) < 420){
+      //double dist = util.inchesToFeet(_ll.getDistanceToTarget(Target.HIGH));
+      //double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
+     // curTargVelo = targetSpeed;
     }
-  }
+ // }
 }
