@@ -23,11 +23,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class RotateToAngle extends CommandBase {
 
   final static double kDefaultTimeout = 2;
+  final static double kMaxRotation = .75;
   double timeout;
   double starttime;
 
   private static DrivetrainSubsystem _drive;
-  private PidController _pidController = new PidController(new PidConstants(0.013, 0, 0.001));
+  private PidController _pidController = new PidController(new PidConstants(0.013, 0, 0.0008));
   private double _currentTime, _target;
   private double kAcceptableError = 2.0;
 
@@ -39,7 +40,7 @@ public class RotateToAngle extends CommandBase {
     _target = targetAngleDegrees;
     _pidController.setContinuous(true);
     _pidController.setInputRange(-180, 180);
-    _pidController.setOutputRange(-1, 1);
+    _pidController.setOutputRange(-kMaxRotation, kMaxRotation);
     _pidController.setSetpoint(0);
     timeout = timeOut;
   }
@@ -71,13 +72,14 @@ public class RotateToAngle extends CommandBase {
     strafe = Utilities.deadband(strafe);
     // Square the strafe stick
     strafe = speedScale * Math.copySign(Math.pow(strafe, 2.0), strafe);
+
     double localTime = Timer.getFPGATimestamp();
     double deltaTime = localTime - _currentTime;
     _currentTime = localTime;
 
     double err = getMinAngleDiff(_drive.getGyroAngle().toDegrees(), _target);
     double rot =  _pidController.calculate(err, deltaTime);
-    _drive.drive(new Translation2d(0.0, 0.0), rot, true);
+    _drive.drive(new Translation2d(forward, strafe), rot, true); //because the angle is continually changing, it's assumed if you drive while calling this you intend to drive field oriented
     
     SmartDashboard.putNumber("AngleError", _target - _drive.getGyroAngle().toDegrees());
     SmartDashboard.putNumber("Rotation Value", rot);

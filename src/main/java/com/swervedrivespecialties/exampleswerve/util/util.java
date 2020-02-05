@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Supplier;
 
 import com.swervedrivespecialties.exampleswerve.RobotMap;
 
@@ -24,7 +25,15 @@ public class util {
 
     public static double metersToInches(double meters){
         return meters * 39.37;
-    }
+	}
+	
+	public static Supplier<Boolean> getTrueSupplier(){
+		return () -> true;
+	}
+
+	public static Supplier<Boolean> getFalseSupplier(){
+		return () -> false;
+	}
 
     public static DataLogger setupLogging(String mode) {
 		DataLogger dataLogger;
@@ -63,5 +72,13 @@ public class util {
     		System.out.println("..Logging Disabled!");
     	}
     	return dataLogger;
+	}
+
+	public static double inchesToFeet(double inches){
+		return inches / 12.;
+	}
+
+	public static double feetToInches(double feet){
+		return feet * 12.;
 	}
 }

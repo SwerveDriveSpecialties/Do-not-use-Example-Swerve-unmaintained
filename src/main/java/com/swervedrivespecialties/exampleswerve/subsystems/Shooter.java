@@ -9,160 +9,96 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
+import com.swervedrivespecialties.exampleswerve.subsystems.Limelight.Target;
+import com.swervedrivespecialties.exampleswerve.util.ShooterTable;
+import com.swervedrivespecialties.exampleswerve.util.ShooterTableEntry;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Shooter implements Subsystem{
 
-    private Shooter(){}
-
-    double kShooterDefaultVBus = .6; //.7
-    double kFeederDefaultVBus = -.4;
-
-    double kShooterCurrentVBus = kShooterDefaultVBus;
-
-    double kInfeedHoldVBus = .25;
-    double kOutfeedVBusDeadband = .05;
-
-    boolean shouldRunShooter = false;
-    boolean shouldRunFeeder = false;
-
-    boolean isAuto = false;
-    boolean isAutoInfeed = true;
-    double kAutoInfeedVBus = .5;
-    double kAutoOutfeedVBus = -.8;
+    double kFeederDefaultVBus = 0.8;
+    double kShooterTalonDefaultVBus = -.5;
+    double kMaxSpeed = 5440.0; //Native Units
 
     private static Shooter _instance = new Shooter();
-
-    DigitalInput infeedLimitSwitch = new DigitalInput(0);
+    private static ShooterTable _shooterTable = ShooterTable.getInstance();
 
     public static Shooter getInstance(){
         return _instance;
     }
 
-    TalonSRX _shooterTalonA = new TalonSRX(RobotMap.SHOOTER_TALON_A);
-    TalonSRX _shooterTalonB = new TalonSRX(RobotMap.SHOOTER_TALON_B);
+    TalonSRX _shooterTalon = new TalonSRX(RobotMap.SHOOTER_TALON);
+    CANSparkMax _shooterNEO = new CANSparkMax(RobotMap.SHOOTER_MASTER_NEO, MotorType.kBrushless);
+    CANSparkMax _shooterSlave = new CANSparkMax(RobotMap.SHOOTER_SLAVE_NEO, MotorType.kBrushless);
     TalonSRX _feederTalon = new TalonSRX(RobotMap.FEEDER_TALON);
-    TalonSRX _infeedTalon = new TalonSRX(RobotMap.INFEED_TALON);
 
-    DoubleSolenoid _puncher = new DoubleSolenoid(2, 3);
-    DoubleSolenoid _succ = new DoubleSolenoid(0, 1);
-    Value kPuncherDefaultValue = Value.kReverse;
-    Value kSuccDefaultValue = Value.kReverse;
+    CANPIDController _pidController;
+    CANEncoder _encoder;
+    double _P = 0.0011;
+    double _I = 0;
+    double _D = 0.01;
+    double _F = 0.0001838;
+    double minOutput = -1;
+    double maxOutput = 1;
+    double maxRPM = 5440;
 
-    public void runShooter(boolean shouldRun){
-        if (shouldRun){
-            _shooterTalonA.set(ControlMode.PercentOutput, kShooterDefaultVBus);
-            _shooterTalonB.set(ControlMode.PercentOutput, kShooterDefaultVBus);
-        } else {
-            _shooterTalonA.set(ControlMode.PercentOutput, 0);
-            _shooterTalonB.set(ControlMode.PercentOutput, 0);
-        }
-    }
+    int _MtrTargetRPM;
+   
+    private Shooter(){
 
-    public void runFeeder(boolean shouldRun){
-        if (shouldRun){
-            _feederTalon.set(ControlMode.PercentOutput, kFeederDefaultVBus);
-        } else {
-            _feederTalon.set(ControlMode.PercentOutput, 0);
-        }
-    }
+        _encoder = _shooterNEO.getEncoder();
+        _pidController = new CANPIDController(_shooterNEO);
 
-    public void runInfeed(double vbus){
-        if (!isAuto){
-            if (infeedLimitSwitch.get()){
-                if (vbus > kOutfeedVBusDeadband){
-                    _infeedTalon.set(ControlMode.PercentOutput, vbus);
-                } else {
-                    _infeedTalon.set(ControlMode.PercentOutput, kInfeedHoldVBus);
-                }
-            } else {
-                _infeedTalon.set(ControlMode.PercentOutput, vbus);
-            }
-        } else {
-            if (isAutoInfeed){
-                if (infeedLimitSwitch.get()){
-                    _infeedTalon.set(ControlMode.PercentOutput, kInfeedHoldVBus);
-                } else {
-                    _infeedTalon.set(ControlMode.PercentOutput, kAutoInfeedVBus);
-                }
-            } else {
-                _infeedTalon.set(ControlMode.PercentOutput, kAutoOutfeedVBus);
-            }
-        }
-    }
+        //_shooterSlave.follow(_shooterNEO, true);
 
-    public void reset(){
-        shouldRunShooter = false;
-        shouldRunFeeder = false;
-    }
-
-    public boolean getShouldRunShooter(){
-        return shouldRunShooter;
-    }
-
-    public boolean getShouldRunFeeder(){
-        return shouldRunFeeder;
-    }
-
-    public void setShouldRunShooter(boolean shouldRun){
-        shouldRunShooter = shouldRun;
-    }
-
-    public void setShouldRunFeeder(boolean shouldRun){
-        shouldRunFeeder = shouldRun;
-    }
-
-    public void togglePuncher(){
-        if (_puncher.get() == Value.kForward){
-            _puncher.set(Value.kReverse);
-        } else if (_puncher.get() == Value.kReverse){
-            _puncher.set(Value.kForward);
-        } else{
-            _puncher.set(kPuncherDefaultValue);
-        }
-    }
-
-    public void resetPuncher(){
-        _puncher.set(kPuncherDefaultValue);
-    }
-
-    public void toggleSucc(){
-        if (_succ.get() == Value.kForward){
-            _succ.set(Value.kReverse);
-        } else if (_puncher.get() == Value.kReverse){
-            _succ.set(Value.kForward);
-        } else{
-            _succ.set(kSuccDefaultValue);
-        }
-    }
-
-    public void resetSucc(){
-        _succ.set(kSuccDefaultValue);
-    }
-
-    public boolean getSwitch(){
-        return infeedLimitSwitch.get();
-    }
-
-    public void setShooterRunSpeed(double vbus){
-        kShooterCurrentVBus = vbus;
+        _pidController.setP(_P);
+        _pidController.setI(_I);
+        _pidController.setD(_D);
+        _pidController.setFF(_F);
+        _pidController.setOutputRange(minOutput, maxOutput);
     } 
-
-    public void resetShooterRunSpeed(){
-        kShooterCurrentVBus = kShooterDefaultVBus;
+    
+    public void runFeeder(boolean shouldRun){
+        double runSpeed = shouldRun ? kFeederDefaultVBus : 0.;
+        _feederTalon.set(ControlMode.PercentOutput, -runSpeed);
     }
 
-    public void startAuto(boolean isInfeed){
-        isAuto = true;
-        isAutoInfeed = isInfeed;
-    }
+    public void runShooter(double spd){
+        SmartDashboard.putNumber("spd", spd);
+        SmartDashboard.putNumber("Target RPM", spd);
+        SmartDashboard.putNumber("velo", _encoder.getVelocity());
+        double talonSpeed = spd > 0 ? spd / kMaxSpeed : 0.0;
 
-    public void endAuto(){
-        isAuto = false;
+        _shooterTalon.set(ControlMode.PercentOutput, -talonSpeed);
+      if (spd <= 20)
+      {
+        _shooterNEO.set(-0.0);
+        _shooterSlave.set(0.0);
+      
+      }
+      else{
+       _shooterNEO.set(-0.95);
+       _shooterSlave.set(0.95);
+      }
+    }
+    //public void runNeo()
+    //{
+     //   _shooterNEO.set(0.8);
+        
+   // }
+
+    public void outputToSDB(){
+        SmartDashboard.putNumber("Distance to Target", Limelight.getInstance().getDistanceToTarget(Target.HIGH));
     }
 }
