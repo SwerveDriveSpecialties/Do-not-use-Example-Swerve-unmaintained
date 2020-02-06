@@ -10,7 +10,8 @@ package com.swervedrivespecialties.exampleswerve;
 import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
 import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.commands.shooter.ShooterSubsystemCommands;
-import com.swervedrivespecialties.exampleswerve.commands.shooter.Trigger;
+import com.swervedrivespecialties.exampleswerve.commands.infeed.InfeedSubsystemCommands;
+import com.swervedrivespecialties.exampleswerve.commands.infeed.Trigger;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
@@ -36,7 +37,7 @@ public class RobotContainer {
     private Joystick primaryJoystick = new Joystick(0);
     private Joystick secondaryJoystick = new Joystick(1);
 
-    private final Infeed _infeed = Infeed.get_instance();
+    private final Infeed infeed = Infeed.get_instance();
 
 
     private DataLogger _dataLogger = null;
@@ -51,7 +52,7 @@ public class RobotContainer {
         final JoystickButton primary_back = new JoystickButton(primaryJoystick, 7);
         final JoystickButton primary_start = new JoystickButton(primaryJoystick, 8);
 
-        primary_a.whileHeld(ShooterSubsystemCommands.getTriggerCommand());
+        primary_a.whileHeld(InfeedSubsystemCommands.getTriggerCommand());
         primary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
         primary_back.whenPressed(DriveSubsystemCommands.getZeroGyroCommand());
         primary_start.whenPressed(DriveSubsystemCommands.getToggleFieldOrientedCommand());
@@ -138,5 +139,6 @@ public class RobotContainer {
 
     public void outputToSDB(){
         shooter.outputToSDB();
+        infeed.outputToSDB();
     }
 }

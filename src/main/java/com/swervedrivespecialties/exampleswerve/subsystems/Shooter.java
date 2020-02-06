@@ -88,8 +88,8 @@ public class Shooter implements Subsystem{
       
       }
       else{
-       _shooterNEO.set(-0.95);
-       _shooterSlave.set(0.95);
+       _shooterNEO.set(-0.85);
+       _shooterSlave.set(0.85);
       }
     }
     //public void runNeo()

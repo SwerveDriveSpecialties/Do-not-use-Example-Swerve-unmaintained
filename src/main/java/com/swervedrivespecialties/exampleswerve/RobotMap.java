@@ -22,6 +22,12 @@ public class RobotMap {
     public static final int SHOOTER_MASTER_NEO  = 10; 
     public static final int FEEDER_TALON = 12;
 
+    //infeed stuffs
+    public static final int CONVEYOR_MOTOR = 12;
+    public static final int BEAM_SENSOR = 0;
+    public static final int BEAM_SENSOR_STOP_BALL = 1;
+
+
     	// Logging
         // this is where the USB stick is mounted on the RoboRIO filesystem.  
         // You can confirm by logging into the RoboRIO using WinSCP

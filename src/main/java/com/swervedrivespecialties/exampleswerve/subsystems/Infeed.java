@@ -10,7 +10,9 @@ package com.swervedrivespecialties.exampleswerve.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.swervedrivespecialties.exampleswerve.commands.shooter.runConveyorMotors;
+import com.swervedrivespecialties.exampleswerve.RobotMap;
+import com.swervedrivespecialties.exampleswerve.commands.infeed.InfeedSubsystemCommands;
+import com.swervedrivespecialties.exampleswerve.commands.infeed.runConveyorMotors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Infeed extends SubsystemBase {
 
+  private final double kEncoderCountsPerBall = 7500;
+  private final double kConveyorTalonConstantVBus = -0.3;
+  private final double kFeederTalonConstantVBus = 0.7;
+
   private static Infeed _instance = new Infeed();
 
   public static Infeed get_instance() {
@@ -28,6 +34,7 @@ public class Infeed extends SubsystemBase {
 
   private TalonSRX _conveyorTalon;
   private DigitalInput _beamSensor;
+  private DigitalInput _beamSensorStopBall;
   private boolean _isFinished = false;
   private boolean _sensorlast;
   private boolean _sensorthis;
@@ -42,20 +49,26 @@ public class Infeed extends SubsystemBase {
   /**
    * Creates a new Infeed.
    */
-  public Infeed() {
-    _conveyorTalon = new TalonSRX(12);
+  private Infeed() {
+    _conveyorTalon = new TalonSRX(RobotMap.CONVEYOR_MOTOR);
     _conveyorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    _beamSensor = new DigitalInput(0);
+    _beamSensor = new DigitalInput(RobotMap.BEAM_SENSOR);
+    _beamSensorStopBall = new DigitalInput(RobotMap.BEAM_SENSOR_STOP_BALL);
   }
 
   public void setDefault() {
     phase = CONVEYORPHASES.PHASE1;
     _isFinished = false;
-    _conveyorTalon.setSelectedSensorPosition(0);
+    _conveyorTalon.setSelectedSensorPosition(RobotMap.BEAM_SENSOR);
+  }
+
+  public void outputToSDB() {
+    SmartDashboard.putBoolean("Bobo", _beamSensorStopBall.get());
+    SmartDashboard.putNumber("ConveyorVAL", _conveyorTalon.getSelectedSensorPosition());
   }
 
   public void vbusFeederWheel(){
-    _conveyorTalon.set(ControlMode.PercentOutput, -0.5);
+    _conveyorTalon.set(ControlMode.PercentOutput, kFeederTalonConstantVBus);
   }
   public void setConveyorZero()
   {
@@ -63,8 +76,8 @@ public class Infeed extends SubsystemBase {
   }
 
   public void conveyorPhases() {
-    if (_conveyorTalon.getSelectedSensorPosition() <= 7500) {
-      _conveyorTalon.set(ControlMode.PercentOutput, -0.3);
+    if (_conveyorTalon.getSelectedSensorPosition() <= kEncoderCountsPerBall) {
+      _conveyorTalon.set(ControlMode.PercentOutput, kConveyorTalonConstantVBus);
       _isFinished = false;
       phase = CONVEYORPHASES.PHASE2;
     }
@@ -104,11 +117,15 @@ public class Infeed extends SubsystemBase {
     return _isFinished;
   }
 
+  public boolean STOPTHEFREAKINGBALLJIMBO() {
+    return !_beamSensorStopBall.get();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (isSensorTrue()) {
-      CommandBase conveyorCommand = new runConveyorMotors(_instance);
+      CommandBase conveyorCommand = InfeedSubsystemCommands.getRunConveyorMotorsCommand();
       conveyorCommand.schedule();
     }
   }
