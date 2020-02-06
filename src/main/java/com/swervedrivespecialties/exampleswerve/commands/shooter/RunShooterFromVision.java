@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 public class RunShooterFromVision extends CommandBase {
   Shooter _shooter;
   Limelight _ll = Limelight.getInstance();
-  double curTargVelo = 0;
+  double _curTargVelo;
+  double _actuatorVal;
 
   public RunShooterFromVision(Shooter shooter) {
     _shooter = shooter;
@@ -30,13 +31,13 @@ public class RunShooterFromVision extends CommandBase {
   @Override
   public void initialize() {
     getSpeed();
-    _shooter.runShooter(3000);
+    _shooter.runShooter(_curTargVelo, _actuatorVal);
   }
 
   @Override 
   public void execute(){
     getSpeed();
-    _shooter.runShooter(3000);
+    _shooter.runShooter(_curTargVelo, _actuatorVal);
     System.out.println("hudghfhew");
   }
 
@@ -47,14 +48,18 @@ public class RunShooterFromVision extends CommandBase {
 
   @Override 
   public void end(boolean interrupted){
-    _shooter.runShooter(0);
+    _shooter.runShooter(0.0, 0);
   }
 
   private void getSpeed(){
     //if (_ll.getDistanceToTarget(Target.HIGH) > 0 && _ll.getDistanceToTarget(Target.HIGH) < 420){
       //double dist = util.inchesToFeet(_ll.getDistanceToTarget(Target.HIGH));
-      //double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
-     // curTargVelo = targetSpeed;
+      double dist = 22;
+      double targetSpeed = ShooterTable.getInstance().CalcShooterValues(dist).MotorTargetRPM;
+      double targetActuatorVal = ShooterTable.getInstance().CalcShooterValues(dist).ActuatorVal;
+      _curTargVelo = targetSpeed;
+      _actuatorVal = targetActuatorVal;
+
     }
  // }
 }

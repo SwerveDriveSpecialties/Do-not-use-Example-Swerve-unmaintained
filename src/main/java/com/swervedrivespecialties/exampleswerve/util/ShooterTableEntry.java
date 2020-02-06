@@ -14,16 +14,18 @@ public class ShooterTableEntry {
     public final int Index;
 	public final double DistanceInFeet;
 	public final int MotorTargetRPM;
+	public final double ActuatorVal;
 	
 
 
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public ShooterTableEntry(int index, double distanceInFeet, int MotorRPM) {
+	public ShooterTableEntry(int index, double distanceInFeet, int MotorRPM, double ActuatorValue) {
 		Index = index;
 		DistanceInFeet = distanceInFeet;
 		MotorTargetRPM = MotorRPM;
+		ActuatorVal = ActuatorValue;
 		
    
     }

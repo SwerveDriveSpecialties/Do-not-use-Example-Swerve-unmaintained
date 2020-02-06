@@ -75,9 +75,11 @@ public class ShooterTable {
             // round to int
             double stg1Adj = scaleFactor * (steAbove.MotorTargetRPM - steBelow.MotorTargetRPM);
             int stg1CalculatedRPM = steBelow.MotorTargetRPM + (int) (Math.round(stg1Adj));
+            
+            double actuatorValue = steBelow.ActuatorVal + (scaleFactor * (steAbove.ActuatorVal - steBelow.ActuatorVal));
 
             // build the return object
-            ste = new ShooterTableEntry(_indexCounter++, distanceInFeet, stg1CalculatedRPM);
+            ste = new ShooterTableEntry(_indexCounter++, distanceInFeet, stg1CalculatedRPM, actuatorValue);
         } else if (steAbove != null) {
             ste = steAbove;
         } else {
@@ -142,8 +144,8 @@ public class ShooterTable {
 		//									Position	feet Stg1  
 		//======================================================================================
 		
-		table.add(new ShooterTableEntry(_indexCounter++,  11.83, 2000));
-        table.add(new ShooterTableEntry(_indexCounter++, 23.85, 3700));
+		table.add(new ShooterTableEntry(_indexCounter++,  11.83, 2000, 0));
+        table.add(new ShooterTableEntry(_indexCounter++, 23.85, 3700, 1));
         //table.add(new ShooterTableEntry(_indexCounter++, 30,  -4264));
 		
 		return table;

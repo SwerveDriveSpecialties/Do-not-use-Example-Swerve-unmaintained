@@ -16,11 +16,13 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.swervedrivespecialties.exampleswerve.RobotMap;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight.Target;
+import com.swervedrivespecialties.exampleswerve.util.LogDataBE;
 import com.swervedrivespecialties.exampleswerve.util.ShooterTable;
 import com.swervedrivespecialties.exampleswerve.util.ShooterTableEntry;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -42,6 +44,7 @@ public class Shooter implements Subsystem{
     CANSparkMax _shooterNEO = new CANSparkMax(RobotMap.SHOOTER_MASTER_NEO, MotorType.kBrushless);
     CANSparkMax _shooterSlave = new CANSparkMax(RobotMap.SHOOTER_SLAVE_NEO, MotorType.kBrushless);
     TalonSRX _feederTalon = new TalonSRX(RobotMap.FEEDER_TALON);
+    Servo _linearActuator = new Servo(0);
 
     CANPIDController _pidController;
     CANEncoder _encoder;
@@ -74,13 +77,15 @@ public class Shooter implements Subsystem{
         _feederTalon.set(ControlMode.PercentOutput, -runSpeed);
     }
 
-    public void runShooter(double spd){
+    public void runShooter(double spd, double actuatorVal){
         SmartDashboard.putNumber("spd", spd);
         SmartDashboard.putNumber("Target RPM", spd);
         SmartDashboard.putNumber("velo", _encoder.getVelocity());
+        SmartDashboard.putNumber("ActuatorVal", actuatorVal); 
         double talonSpeed = spd > 0 ? spd / kMaxSpeed : 0.0;
 
         _shooterTalon.set(ControlMode.PercentOutput, -talonSpeed);
+        _linearActuator.set(.67);
       if (spd <= 20)
       {
         _shooterNEO.set(-0.0);
@@ -88,17 +93,20 @@ public class Shooter implements Subsystem{
       
       }
       else{
-       _shooterNEO.set(-0.95);
-       _shooterSlave.set(0.95);
+
+        //atual
+       _shooterNEO.set(-0.8);
+       _shooterSlave.set(0.8);
       }
     }
-    //public void runNeo()
-    //{
-     //   _shooterNEO.set(0.8);
-        
-   // }
+
+
+ 
 
     public void outputToSDB(){
         SmartDashboard.putNumber("Distance to Target", Limelight.getInstance().getDistanceToTarget(Target.HIGH));
+    }
+    public void updateLogData(LogDataBE logData){  
+       
     }
 }

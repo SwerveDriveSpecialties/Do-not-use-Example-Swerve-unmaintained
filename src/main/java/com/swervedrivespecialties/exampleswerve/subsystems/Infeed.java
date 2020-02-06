@@ -55,7 +55,7 @@ public class Infeed extends SubsystemBase {
   }
 
   public void vbusFeederWheel(){
-    _conveyorTalon.set(ControlMode.PercentOutput, -0.5);
+    _conveyorTalon.set(ControlMode.PercentOutput, -0.7);
   }
   public void setConveyorZero()
   {
