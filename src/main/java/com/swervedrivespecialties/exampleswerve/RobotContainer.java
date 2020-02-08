@@ -11,7 +11,6 @@ import com.swervedrivespecialties.exampleswerve.auton.Trajectories;
 import com.swervedrivespecialties.exampleswerve.commands.drive.DriveSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.commands.shooter.ShooterSubsystemCommands;
 import com.swervedrivespecialties.exampleswerve.commands.infeed.InfeedSubsystemCommands;
-import com.swervedrivespecialties.exampleswerve.commands.infeed.Trigger;
 import com.swervedrivespecialties.exampleswerve.subsystems.DrivetrainSubsystem;
 import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 import com.swervedrivespecialties.exampleswerve.subsystems.Limelight;
@@ -52,8 +51,8 @@ public class RobotContainer {
         final JoystickButton primary_back = new JoystickButton(primaryJoystick, 7);
         final JoystickButton primary_start = new JoystickButton(primaryJoystick, 8);
 
-        primary_a.whileHeld(InfeedSubsystemCommands.getTriggerCommand());
-        primary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
+        //primary_a.toggleWhenPressed(InfeedSubsystemCommands.getConveyToShootCommand());
+        //primary_b.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
         primary_back.whenPressed(DriveSubsystemCommands.getZeroGyroCommand());
         primary_start.whenPressed(DriveSubsystemCommands.getToggleFieldOrientedCommand());
         primary_y.whenPressed(DriveSubsystemCommands.getToggleSpeedCommand());
@@ -67,8 +66,8 @@ public class RobotContainer {
     private void bindSecondaryJoystickButtons(){
         final JoystickButton secondary_a = new JoystickButton(secondaryJoystick, 1);
         final JoystickButton secondary_b = new JoystickButton(secondaryJoystick, 2);
-        // final JoystickButton secondary_x = new JoystickButton(primaryJoystick, 3);
-        // final JoystickButton secondary_y = new JoystickButton(primaryJoystick, 4);
+        final JoystickButton secondary_x = new JoystickButton(secondaryJoystick, 3);
+        final JoystickButton secondary_y = new JoystickButton(secondaryJoystick, 4);
         // final JoystickButton secondary_left_bumper = new JoystickButton(primaryJoystick, 5);
         // final JoystickButton secondary_right_bumber= new JoystickButton(primaryJoystick, 6);
         // final JoystickButton secondary_back = new JoystickButton(primaryJoystick, 7);
@@ -76,6 +75,10 @@ public class RobotContainer {
 
         //secondary_a.whileHeld(ShooterSubsystemCommands.getTriggerCommand());
        // secondary_b.whenPressed(ShooterSubsystemCommands.getRunConveyorMotors());
+       secondary_a.toggleWhenPressed(InfeedSubsystemCommands.getConveyToShootCommand());
+       secondary_y.toggleWhenPressed(ShooterSubsystemCommands.getRunShooterFromVisionCommand());
+       secondary_x.toggleWhenPressed(InfeedSubsystemCommands.getRunInfeedCommand());
+       secondary_b.toggleWhenPressed(InfeedSubsystemCommands.getRunSingulatorCommand());
     }
 
     public RobotContainer(){

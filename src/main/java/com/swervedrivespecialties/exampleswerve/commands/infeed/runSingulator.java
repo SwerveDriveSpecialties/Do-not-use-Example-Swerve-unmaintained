@@ -7,40 +7,38 @@
 
 package com.swervedrivespecialties.exampleswerve.commands.infeed;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+public class runSingulator extends CommandBase {
 
-public class convey extends CommandBase {
-  private Infeed _infeed;
-  double targetPos;
+  Infeed _infeed;
 
-  public convey(Infeed infeed) {
+  public runSingulator(Infeed infeed) {
     _infeed = infeed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    targetPos = Infeed.get_instance().getConveyorPosiiton() + Infeed.kEncoderCountsPerBall;
+    _infeed.runSingulator();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _infeed.conveyConveyor();
+    _infeed.runSingulator();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _infeed.stopConveyor();
+    _infeed.stopSingulator();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (_infeed.getConveyorPosiiton() > targetPos) || _infeed.getPreShooterSensor();
+    return _infeed.getPostSingulatorSensor();
   }
 }

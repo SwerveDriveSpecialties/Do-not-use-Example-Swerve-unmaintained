@@ -5,46 +5,47 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package com.swervedrivespecialties.exampleswerve.commands.shooter;
+package com.swervedrivespecialties.exampleswerve.commands.infeed;
 
-import com.swervedrivespecialties.exampleswerve.subsystems.Shooter;
+import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class FeedFeeder extends CommandBase {
-  
-  Shooter _shooter;
 
-  public FeedFeeder(Shooter shooter) {
-    _shooter = shooter;
+//Runs the conveyor to shoot
+public class conveyToShoot extends CommandBase {
+  private Infeed _infeed;
+  /**
+   * Creates a new Trigger.
+   */
+  public conveyToShoot(Infeed infeed) {
+    _infeed = infeed;
+    addRequirements(_infeed);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
-
-  int kMaxCycles = 10;
-  int numCycles;
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    numCycles = 0;
-    _shooter.runFeeder(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    numCycles++;
-    _shooter.runFeeder(true);
+    _infeed.conveyConveyorToShoot();
+    _infeed.runSingulatorToShoot();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _shooter.runFeeder(false);
+    _infeed.stopConveyor();
+    _infeed.stopSingulator();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return numCycles > kMaxCycles;
+    return false;
   }
 }

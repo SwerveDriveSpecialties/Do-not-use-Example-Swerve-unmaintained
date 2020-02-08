@@ -7,18 +7,12 @@
 
 package com.swervedrivespecialties.exampleswerve.commands.shooter;
 
-import com.swervedrivespecialties.exampleswerve.commands.infeed.Trigger;
-import com.swervedrivespecialties.exampleswerve.commands.infeed.runConveyorMotors;
 import com.swervedrivespecialties.exampleswerve.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class ShooterSubsystemCommands {
     public static Shooter shooter = Shooter.getInstance();
-
-    public static CommandBase getFeedFeederCommand(){
-        return new FeedFeeder(shooter);
-    }
 
     public static CommandBase getRunShooterFromVisionCommand(){
         return new RunShooterFromVision(shooter);

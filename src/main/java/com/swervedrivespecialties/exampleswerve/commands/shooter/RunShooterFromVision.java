@@ -25,11 +25,13 @@ public class RunShooterFromVision extends CommandBase {
 
   public RunShooterFromVision(Shooter shooter) {
     _shooter = shooter;
+    addRequirements(_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("SHOOTER INITIALIZING");
     getSpeed();
     _shooter.runShooter(_curTargVelo, _actuatorVal);
   }
@@ -38,7 +40,7 @@ public class RunShooterFromVision extends CommandBase {
   public void execute(){
     getSpeed();
     _shooter.runShooter(_curTargVelo, _actuatorVal);
-    System.out.println("hudghfhew");
+    //System.out.println("hudghfhew");
   }
 
   @Override

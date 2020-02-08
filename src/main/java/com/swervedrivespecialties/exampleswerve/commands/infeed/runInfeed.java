@@ -7,37 +7,33 @@
 
 package com.swervedrivespecialties.exampleswerve.commands.infeed;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.swervedrivespecialties.exampleswerve.subsystems.Infeed;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+public class runInfeed extends CommandBase {
+  
+  Infeed _infeed = Infeed.get_instance();
 
-public class Trigger extends CommandBase {
-  private Infeed _infeed;
-  /**
-   * Creates a new Trigger.
-   */
-  public Trigger(Infeed infeed) {
+  public runInfeed(Infeed infeed) {
     _infeed = infeed;
-    addRequirements(_infeed);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    _infeed.runInfeed();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _infeed.vbusFeederWheel();
+    _infeed.runInfeed();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    _infeed.stopConveyor();
+    _infeed.stopInfeed();
   }
 
   // Returns true when the command should end.

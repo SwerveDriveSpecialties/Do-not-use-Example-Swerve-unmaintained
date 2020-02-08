@@ -18,11 +18,19 @@ public class InfeedSubsystemCommands {
     public static Infeed infeed = Infeed.get_instance();
 
     
-    public static CommandBase getTriggerCommand(){
-        return new Trigger(infeed);
+    public static CommandBase getConveyToShootCommand(){
+        return new conveyToShoot(infeed);
     }
 
     public static CommandBase getConveyCommand(){
         return new convey(infeed);
     }  
+
+    public static CommandBase getRunInfeedCommand(){
+        return new runInfeed(infeed);
+    }
+
+    public static CommandBase getRunSingulatorCommand(){
+        return new runSingulator(infeed);
+    }
 }

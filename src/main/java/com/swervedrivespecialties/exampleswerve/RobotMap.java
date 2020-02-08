@@ -17,15 +17,18 @@ public class RobotMap {
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER = 3; // Analog
     public static final int DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR = 8; // CAN
 
-    public static final int SHOOTER_TALON = 11;
+    public static final int KICKER_TALON = 11;
     public static final int SHOOTER_SLAVE_NEO  = 9; 
     public static final int SHOOTER_MASTER_NEO  = 10; 
-    public static final int FEEDER_TALON = 12;
 
     //infeed stuffs
     public static final int CONVEYOR_MOTOR = 12;
-    public static final int BEAM_SENSOR = 0;
-    public static final int BEAM_SENSOR_STOP_BALL = 1;
+    public static final int SINGULATOR_MOTOR = 13;
+    public static final int INFEED_MOTOR = 14;
+
+    public static final int PRE_CONVEYOR_SENSOR = 0;
+    public static final int PRE_SHOOTER_SENSOR = 1;
+    public static final int POST_SINGULATOR_SENSOR = 2;
 
 
     	// Logging
