@@ -22,7 +22,7 @@ public class InfeedSubsystemCommands {
         return new Trigger(infeed);
     }
 
-    public static CommandBase getRunConveyorMotorsCommand(){
-        return new runConveyorMotors(infeed);
+    public static CommandBase getConveyCommand(){
+        return new convey(infeed);
     }  
 }

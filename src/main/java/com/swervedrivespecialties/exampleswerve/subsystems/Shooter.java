@@ -79,24 +79,15 @@ public class Shooter implements Subsystem{
         SmartDashboard.putNumber("Target RPM", spd);
         SmartDashboard.putNumber("velo", _encoder.getVelocity());
         double talonSpeed = spd > 0 ? spd / kMaxSpeed : 0.0;
-
         _shooterTalon.set(ControlMode.PercentOutput, -talonSpeed);
-      if (spd <= 20)
-      {
+      if (spd <= 20) {
         _shooterNEO.set(-0.0);
         _shooterSlave.set(0.0);
-      
-      }
-      else{
+      } else {
        _shooterNEO.set(-0.85);
        _shooterSlave.set(0.85);
       }
     }
-    //public void runNeo()
-    //{
-     //   _shooterNEO.set(0.8);
-        
-   // }
 
     public void outputToSDB(){
         SmartDashboard.putNumber("Distance to Target", Limelight.getInstance().getDistanceToTarget(Target.HIGH));
