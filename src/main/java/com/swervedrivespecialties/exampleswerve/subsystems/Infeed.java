@@ -23,11 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Infeed extends SubsystemBase {
 
-  public static final double kEncoderCountsPerBall = 4800;
-  private static final double kConveyorTalonConstantVBus = -0.4;
+  public static final double kEncoderCountsPerBall = 6000;
+  private static final double kConveyorTalonConstantVBus = -0.3;
   private static final double kConveyToShootConstantVBUS = -.7;
-  private static final double kInfeedVBus = .4;
-  private static final double kSingulatorVBus = -.5;
+  private static final double kInfeedVBus = -.4;
+  private static final double kSingulatorVBus = -.45;
   private static final double kSingulateToShootVBus = -.5;
 
   private static Infeed _instance = new Infeed();
@@ -94,14 +94,18 @@ public class Infeed extends SubsystemBase {
 
   public boolean preConveyorSensorPressed() {
     if (_isFirstCycle) {
-      _preConveyorSensorThisCycle = _preConveyorSensor.get();
+      _preConveyorSensorThisCycle = getPreConveyorSensor();
       _isFirstCycle = false;
       return false;
     } else {
       _preConveyorSensorLastCycle = _preConveyorSensorThisCycle;
-      _preConveyorSensorThisCycle = _preConveyorSensor.get();
-      return !_preConveyorSensorThisCycle && _preConveyorSensorLastCycle;
+      _preConveyorSensorThisCycle = getPreConveyorSensor();
+      return _preConveyorSensorThisCycle && !_preConveyorSensorLastCycle;
     }
+  }
+
+  public boolean getPreConveyorSensor(){
+    return !_preConveyorSensor.get();
   }
 
   public boolean getPreShooterSensor() {

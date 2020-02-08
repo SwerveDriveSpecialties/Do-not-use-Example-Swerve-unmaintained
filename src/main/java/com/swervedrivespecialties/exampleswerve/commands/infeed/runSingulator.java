@@ -21,13 +21,13 @@ public class runSingulator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _infeed.runSingulator();
+    runSing();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    _infeed.runSingulator();
+    runSing();
   }
 
   // Called once the command ends or is interrupted.
@@ -39,6 +39,14 @@ public class runSingulator extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return _infeed.getPostSingulatorSensor();
+    return _infeed.getPostSingulatorSensor() && _infeed.getPreShooterSensor();
+  }
+
+  private void runSing(){
+    if (!_infeed.getPreConveyorSensor()){
+      _infeed.runSingulator();
+    } else {
+      _infeed.stopSingulator();
+    }
   }
 }
